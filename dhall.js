@@ -1,3 +1,10 @@
+//This code sets up handlers for all of our check boxes
+// This code sets up a handler for the #monday 
+d3.select('#monday')
+  .on('change', function() {
+    console.log(d3.select(this).node().checked);
+  });
+
 d3.csv("2016s.csv", function(dhall) {
 	var svg_width = 800;
 	var svg_height = 800;
