@@ -1,3 +1,4 @@
+/*
 // SVG Stuff
 var svg_width = 800;
 var svg_height = 800;
@@ -55,9 +56,13 @@ svg.append('g')
   .attr('transform',
      'translate(' + margin + ', ' + margin + ')')
   .call(yaxis);
+*/
 
 
 // Crossfilter Stuff for Search Criteria
+
+
+
 
 
 //This code sets up handlers for all of our check boxes
@@ -79,20 +84,18 @@ d3.queue()
 		processCsvData(f2015);
 		processCsvData(s2015);
 		processCsvData(s2016);
-		
-		console.log(someArray);			// flag
 })
 
 // Array Objects to Hold Aggregated Data
-var someArray = new Array(); 
-var dayTotalArray = new Array();
+var trafficByFften = new Array(); 
+var trafficByDay = new Array();
 
 var processCsvData = function (data) {
 	// Populating array with every row in csv sheets 
 	for (var row of data) {
 			if (row.Dash == " Day Totals:") {
 				// pushing single day totals onto separate array
-				dayTotalArray.push ({
+				trafficByDay.push ({
 					date: new Date(row.Date),
 					day: row.Day,
 					week: row.Week,
@@ -114,7 +117,7 @@ var processCsvData = function (data) {
 				date.setMinutes(time.substring(j+1, j+3));
 
 				// popuating row onto object
-				someArray.push({
+				trafficByFften.push({
 					timeStamp: date,
 					dineIn: row.DineIn,
 					dineOut: row.DineOut
