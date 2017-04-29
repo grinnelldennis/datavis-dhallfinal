@@ -1,69 +1,3 @@
-//This code sets up handlers for all of our check boxes
-// This code sets up a handler for the #monday 
-d3.select('#monday')
-  .on('change', function() {
-    console.log(d3.select(this).node().checked);
-  });
-
-// Loading csv data using d3
-d3.queue()
-	.defer(d3.csv, 'formatted csv/2014f.csv')
-	.defer(d3.csv, 'formatted csv/2015f.csv')
-	.defer(d3.csv, 'formatted csv/2015s.csv')
-	.defer(d3.csv, 'formatted csv/2016s.csv')
-	.await(function(error, f2014, f2015, s2015, s2016) {
-		console.log("queued");			// flag
-
-		/* PROCESSING DATA */
-		processCsvData(f2014);
-		processCsvData(f2015);
-		processCsvData(s2015);
-		processCsvData(s2016);
-		
-		console.log(someArray);			// flag
-})
-
-// Array Objects to Hold Aggregated Data
-var someArray = new Array(); 
-var dayTotalArray = new Array();
-
-var processCsvData = function (data) {
-	// Populating array with every row in csv sheets 
-	for (var row of data) {
-			if (row.Dash == " Day Totals:") {
-				// pushing single day totals onto separate array
-				dayTotalArray.push ({
-					date: new Date(row.Date),
-					day: row.Day,
-					week: row.Week,
-					dineIn: row.DineIn,
-					dineOut: row.DineOut
-				});
-			} else {
-				// process time information
-				var time = row.TimeIn;
-				var i = time.length;
-				var j = time.indexOf(":");
-				var apm = time.substring(i-2,i-1);
-				var hour = parseInt(time.substring(0, 2));
-				hour = (apm === "P")? hour+=12 : hour;
-
-				// writing time into a Date object
-				var date = new Date(row.Date);
-				date.setHours(hour);
-				date.setMinutes(time.substring(j+1, j+3));
-
-				// popuating row onto object
-				someArray.push({
-					timeStamp: date,
-					dineIn: row.DineIn,
-					dineOut: row.DineOut
-				});
-			}
-		}
-}
-
-/*
 // SVG Stuff
 var svg_width = 800;
 var svg_height = 800;
@@ -121,4 +55,74 @@ svg.append('g')
   .attr('transform',
      'translate(' + margin + ', ' + margin + ')')
   .call(yaxis);
-*/
+
+
+// Crossfilter Stuff for Search Criteria
+
+
+//This code sets up handlers for all of our check boxes
+// This code sets up a handler for the #monday 
+d3.select('#monday')
+  .on('change', function() {
+    console.log(d3.select(this).node().checked);
+  });
+
+// Loading csv data using d3
+d3.queue()
+	.defer(d3.csv, 'formatted csv/2014f.csv')
+	.defer(d3.csv, 'formatted csv/2015f.csv')
+	.defer(d3.csv, 'formatted csv/2015s.csv')
+	.defer(d3.csv, 'formatted csv/2016s.csv')
+	.await(function(error, f2014, f2015, s2015, s2016) {
+		/* DATA PROCESSING */
+		processCsvData(f2014);
+		processCsvData(f2015);
+		processCsvData(s2015);
+		processCsvData(s2016);
+		
+		console.log(someArray);			// flag
+})
+
+// Array Objects to Hold Aggregated Data
+var someArray = new Array(); 
+var dayTotalArray = new Array();
+
+var processCsvData = function (data) {
+	// Populating array with every row in csv sheets 
+	for (var row of data) {
+			if (row.Dash == " Day Totals:") {
+				// pushing single day totals onto separate array
+				dayTotalArray.push ({
+					date: new Date(row.Date),
+					day: row.Day,
+					week: row.Week,
+					dineIn: row.DineIn,
+					dineOut: row.DineOut
+				});
+			} else {
+				// process time information
+				var time = row.TimeIn;
+				var i = time.length;
+				var j = time.indexOf(":");
+				var apm = time.substring(i-2,i-1);
+				var hour = parseInt(time.substring(0, 2));
+				hour = (apm === "P")? hour+=12 : hour;
+
+				// writing time into a Date object
+				var date = new Date(row.Date);
+				date.setHours(hour);
+				date.setMinutes(time.substring(j+1, j+3));
+
+				// popuating row onto object
+				someArray.push({
+					timeStamp: date,
+					dineIn: row.DineIn,
+					dineOut: row.DineOut
+				});
+			}
+		}
+}
+
+
+
+
