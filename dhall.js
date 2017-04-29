@@ -59,11 +59,38 @@ svg.append('g')
 */
 
 
-// Crossfilter Stuff for Search Criteria
+/* Crossfilter
+ Aggregate Datasets */
+var dailyTrafficCf = crossfilter();			// for line graph
+var fftenTrafficCf = crossfilter();			// for bar graph
+
+// Cf Dimensions, filtering options by attribute/column
+var dTrafficByWeek = dailyTrafficCf.dimension(d => d.Week);
+var dTrafficByDayOfWk = dailyTrafficCf.dimension(d => d.Day);
+
+var fTrafficByDate = fftenTrafficCf.dimension(d => d.Date);
 
 
+/* Update View */
+function updateViewBar() {
+	// Grouping...
 
+	// Scaling
+	//  finding Max
 
+	// Drawing Bars
+
+}
+
+function updateViewLine() {
+	// Grouping...
+
+	// Scaling
+	//  finding Max
+
+	// Drawing lines
+	
+}
 
 //This code sets up handlers for all of our check boxes
 // This code sets up a handler for the #monday 
@@ -84,6 +111,10 @@ d3.queue()
 		processCsvData(f2015);
 		processCsvData(s2015);
 		processCsvData(s2016);
+
+		// Updates Graphs
+		updateViewBar();
+		updateViewLine();
 })
 
 // Array Objects to Hold Aggregated Data
@@ -96,11 +127,11 @@ var processCsvData = function (data) {
 			if (row.Dash == " Day Totals:") {
 				// pushing single day totals onto separate array
 				trafficByDay.push ({
-					date: new Date(row.Date),
-					day: row.Day,
-					week: row.Week,
-					dineIn: row.DineIn,
-					dineOut: row.DineOut
+					Date: new Date(row.Date),
+					Day: row.Day,
+					Week: row.Week,
+					DineIn: row.DineIn,
+					DineOut: row.DineOut
 				});
 			} else {
 				// process time information
@@ -118,9 +149,9 @@ var processCsvData = function (data) {
 
 				// popuating row onto object
 				trafficByFften.push({
-					timeStamp: date,
-					dineIn: row.DineIn,
-					dineOut: row.DineOut
+					Date: date,
+					DineIn: row.DineIn,
+					DineOut: row.DineOut
 				});
 			}
 		}
