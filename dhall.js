@@ -5,9 +5,6 @@ d3.select('#monday')
     console.log(d3.select(this).node().checked);
   });
 
-var someArray = new Array(); 
-var dayTotalArray = new Array();
-
 // Loading csv data using d3
 d3.queue()
 	.defer(d3.csv, 'formatted csv/2014f.csv')
@@ -15,13 +12,24 @@ d3.queue()
 	.defer(d3.csv, 'formatted csv/2015s.csv')
 	.defer(d3.csv, 'formatted csv/2016s.csv')
 	.await(function(error, f2014, f2015, s2015, s2016) {
+		console.log("queued");			// flag
 
 		/* PROCESSING DATA */
-		// Some array to hold all data
-		console.log("queued");
+		processCsvData(f2014);
+		processCsvData(f2015);
+		processCsvData(s2015);
+		processCsvData(s2016);
+		
+		console.log(someArray);			// flag
+})
 
-		// Populating something with every row in csv sheets 
-		for (var row of f2014) {
+// Array Objects to Hold Aggregated Data
+var someArray = new Array(); 
+var dayTotalArray = new Array();
+
+var processCsvData = function (data) {
+	// Populating array with every row in csv sheets 
+	for (var row of data) {
 			if (row.Dash == " Day Totals:") {
 				// pushing single day totals onto separate array
 				dayTotalArray.push ({
@@ -31,7 +39,6 @@ d3.queue()
 					dineIn: row.DineIn,
 					dineOut: row.DineOut
 				});
-				console.log("pushed " + row);
 			} else {
 				// process time information
 				var time = row.TimeIn;
@@ -40,7 +47,6 @@ d3.queue()
 				var apm = time.substring(i-2,i-1);
 				var hour = parseInt(time.substring(0, 2));
 				hour = (apm === "P")? hour+=12 : hour;
-
 
 				// writing time into a Date object
 				var date = new Date(row.Date);
@@ -55,8 +61,7 @@ d3.queue()
 				});
 			}
 		}
-		console.log(someArray);
-})
+}
 
 /*
 // SVG Stuff
