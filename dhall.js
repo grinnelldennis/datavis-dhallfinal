@@ -33,17 +33,19 @@ d3.queue()
 				});
 				console.log("pushed " + row);
 			} else {
-				// pre-process time information
+				// process time information
 				var time = row.TimeIn;
 				var i = time.length;
+				var j = time.indexOf(":");
 				var apm = time.substring(i-2,i-1);
 				var hour = parseInt(time.substring(0, 2));
 				hour = (apm === "P")? hour+=12 : hour;
 
+
 				// writing time into a Date object
 				var date = new Date(row.Date);
 				date.setHours(hour);
-				date.setMinutes(time.substring(3, 5));
+				date.setMinutes(time.substring(j+1, j+3));
 
 				// popuating row onto object
 				someArray.push({
@@ -51,12 +53,9 @@ d3.queue()
 					dineIn: row.DineIn,
 					dineOut: row.DineOut
 				});
-				
 			}
 		}
-
 		console.log(someArray);
-		console.log(dayTotalArray);
 })
 
 /*
