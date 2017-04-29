@@ -124,7 +124,7 @@ var trafficByDay = new Array();
 var processCsvData = function (data) {
 	// Populating array with every row in csv sheets 
 	for (var row of data) {
-			if (row.Dash == " Day Totals:") {
+			if (row.Dash == "DayTotals:") {
 				// pushing single day totals onto separate array
 				trafficByDay.push ({
 					Date: new Date(row.Date),
