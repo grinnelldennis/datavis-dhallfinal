@@ -1,4 +1,4 @@
-/*
+
 // SVG Stuff
 var svg_width = 800;
 var svg_height = 800;
@@ -56,48 +56,53 @@ svg.append('g')
   .attr('transform',
      'translate(' + margin + ', ' + margin + ')')
   .call(yaxis);
-*/
 
 
-/* Crossfilter
- Aggregate Datasets */
-var dailyTrafficCf = crossfilter();			// for line graph
-var fftenTrafficCf = crossfilter();			// for bar graph
 
-// Cf Dimensions, filtering options by attribute/column
-var dTrafficByWeek = dailyTrafficCf.dimension(d => d.Week);
-var dTrafficByDayOfWk = dailyTrafficCf.dimension(d => d.Day);
+// Written and Tested by Dennis
 
-var fTrafficByDate = fftenTrafficCf.dimension(d => d.Date);
+// Data for drawing graph respectively
+var dateData = new Array;
+var timeData = new Array;
 
-
-/* Update View */
+//---Update View 
 function updateViewBar() {
-	// Grouping...
-
 	// Scaling
 	//  finding Max
-
+	var maxSwipeBar = d3.max(dateData, d => d.DineIn);
 	// Drawing Bars
-
 }
 
 function updateViewLine() {
 	// Grouping...
-
 	// Scaling
 	//  finding Max
-
 	// Drawing lines
-	
 }
+
+//---Filtering 
+// Filtering Conditions, update on handler click
+var dIsSelected = [true, true, true, true, true, true, true];
+var wIsSelected = null;		//initialize
+var dStart = null;	//initialize
+var dEnd = null;		//initialize
+var tStart = null;	//initialize
+var tEnd = null;		//initialize
+var dineIn = true;
+var dineOut = true;
+
+// Weekday Filter
+dateData.filter(function(d) {return dIsSelected[+d.Day];})
+// Day Range Filter
+dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
+
+// Time Range Filter
+timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
 
 //This code sets up handlers for all of our check boxes
 // This code sets up a handler for the #monday 
 d3.select('#monday')
-  .on('change', function() {
-    console.log(d3.select(this).node().checked);
-  });
+  .on('change', function() { console.log(d3.select(this).node().checked); });
 
 // Loading csv data using d3
 d3.queue()
@@ -124,37 +129,40 @@ var trafficByDay = new Array();
 var processCsvData = function (data) {
 	// Populating array with every row in csv sheets 
 	for (var row of data) {
-			if (row.Dash == "DayTotals:") {
-				// pushing single day totals onto separate array
-				trafficByDay.push ({
-					Date: new Date(row.Date),
-					Day: row.Day,
-					Week: row.Week,
-					DineIn: row.DineIn,
-					DineOut: row.DineOut
-				});
-			} else {
-				// process time information
-				var time = row.TimeIn;
-				var i = time.length;
-				var j = time.indexOf(":");
-				var apm = time.substring(i-2,i-1);
-				var hour = parseInt(time.substring(0, 2));
-				hour = (apm === "P")? hour+=12 : hour;
+		if (row.Dash == "DayTotals:") {
+			// pushing single day totals onto separate array
+			trafficByDay.push ({
+				Date: new Date(row.Date),
+				Day: row.Day,
+				Week: row.Week,
+				DineIn: row.DineIn,
+				DineOut: row.DineOut
+			});
+		} else {
+			// process time information
+			var time = row.TimeIn;
+			var i = time.length;
+			var j = time.indexOf(":");
+			var apm = +time.substring(i-2,i-1);
+			var hour = +time.substring(0, 2);
+			hour = (apm === "P")? hour+=12 : hour;
 
-				// writing time into a Date object
-				var date = new Date(row.Date);
-				date.setHours(hour);
-				date.setMinutes(time.substring(j+1, j+3));
+			// writing time into a Date object
+			var date = new Date(row.Date);
+			date.setUTCHours(hour);
+			date.setUTCMinutes(+time.substring(j+1, j+3));
 
-				// popuating row onto object
-				trafficByFften.push({
-					Date: date,
-					DineIn: row.DineIn,
-					DineOut: row.DineOut
-				});
-			}
+			// popuating row onto object
+			trafficByFften.push({
+				Date: date,
+				DineIn: row.DineIn,
+				DineOut: row.DineOut
+			});
 		}
+	}
+
+
+
 }
 
 
