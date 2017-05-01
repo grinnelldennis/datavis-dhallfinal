@@ -99,6 +99,9 @@ dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
 // Time Range Filter
 timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
 
+// Set up a default click handler, which is called at the end of any click action
+window.onclick = blankClick;
+
 //This code sets up handlers for our check boxes
 // This code sets up a handler for the #Dining in 
 d3.select('#Dining in')
