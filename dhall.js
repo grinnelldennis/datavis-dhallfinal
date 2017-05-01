@@ -153,10 +153,39 @@ dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
 // Time Range Filter
 timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
 
+<<<<<<< HEAD
 // This code sets up handlers for all of our check boxes
 // This code sets up a handler for the #monday 
 d3.select('#monday')
+=======
+//This code sets up handlers for our check boxes
+// This code sets up a handler for the #Dining in 
+d3.select('#Dining in')
+>>>>>>> 8ad4f192c28ccc2a583c86934dd4b0c533790a6b
   .on('change', function() { console.log(d3.select(this).node().checked); });
+
+// This code sets up a handler for the #To-Go Box
+d3.select('#To-Go Box')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+
+// This code sets up the handler for the drop down menus
+// Semester drop down
+d3.select('#semester')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+// Week drop down
+d3.select('#week')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+// Day of week drop down
+d3.select('#day')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
 
 // Loading csv data using d3
 d3.queue()
