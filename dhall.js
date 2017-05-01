@@ -59,6 +59,12 @@ svg.append('g')
 */
 
 
+//This code sets up handlers for all of our check boxes
+// This code sets up a handler for the #monday 
+d3.select('#monday')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+
+
 // Written and Tested by Dennis
 
 // Data for drawing graph respectively
@@ -93,18 +99,30 @@ var dineOut = true;
 
 // Weekday Filter
 dateData.filter(function(d) {return dIsSelected[+d.Day];})
-// Day Range Filter
-dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
 
-// Time Range Filter
-timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
 
-//This code sets up handlers for all of our check boxes
-// This code sets up a handler for the #monday 
-d3.select('#monday')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
+// Filtering Data for Week Stack Plot
+var weekData = [];
 
-// Loading csv data using d3
+function populateWeekArray (a, d1, d3, w1, w3) {
+  weekData = new Array;
+  // initialize empty array
+  for (var i = 0; i < 7; i++) { weekData.push({Day: i, DineIn: 0, DineOut: 0, wkCount: 0}); }
+  // filter data to get relevant data
+  a = a.filter(function(d) { return +w1 <= +d.Week && +d.Week < +w3; });
+  a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
+  console.log(a.length);
+  for (var row of a) { 
+    if (parseInt(row.DineIn) != 0) {
+      weekData[+row.Day].DineIn += +row.DineIn; 
+      weekData[+row.Day].DineOut += +row.DineOut; 
+      weekData[+row.Day].wkCount++;
+    }     
+  }
+}
+
+
+//---Loading CSV
 d3.queue()
 	.defer(d3.csv, 'formatted csv/2014f.csv')
 	.defer(d3.csv, 'formatted csv/2015f.csv')
@@ -121,6 +139,7 @@ d3.queue()
 		updateViewBar();
 		updateViewLine();
 })
+
 
 // Array Objects to Hold Aggregated Data
 var trafficByFften = new Array(); 
@@ -160,9 +179,6 @@ var processCsvData = function (data) {
 			});
 		}
 	}
-
-
-
 }
 
 
