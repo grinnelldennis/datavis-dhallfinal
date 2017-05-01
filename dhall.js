@@ -153,15 +153,14 @@ dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
 // Time Range Filter
 timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
 
-<<<<<<< HEAD
-// This code sets up handlers for all of our check boxes
 // This code sets up a handler for the #monday 
 d3.select('#monday')
-=======
+// Set up a default click handler, which is called at the end of any click action
+window.onclick = blankClick;
+
 //This code sets up handlers for our check boxes
 // This code sets up a handler for the #Dining in 
 d3.select('#Dining in')
->>>>>>> 8ad4f192c28ccc2a583c86934dd4b0c533790a6b
   .on('change', function() { console.log(d3.select(this).node().checked); });
 
 // This code sets up a handler for the #To-Go Box
