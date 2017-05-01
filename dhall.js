@@ -1,4 +1,4 @@
-
+/*
 // SVG Stuff
 var svg_width = 800;
 var svg_height = 800;
@@ -56,14 +56,14 @@ svg.append('g')
   .attr('transform',
      'translate(' + margin + ', ' + margin + ')')
   .call(yaxis);
-
+*/
 
 
 // Written and Tested by Dennis
 
 // Data for drawing graph respectively
-var dateData = new Array;
-var timeData = new Array;
+var dateData = new Array;   // semester long grapah
+var timeData = new Array;   // day long
 
 //---Update View 
 function updateViewBar() {
