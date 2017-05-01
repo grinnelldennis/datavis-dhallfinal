@@ -92,7 +92,16 @@ svg.append('text')
       'translate(' + (plot_left_margin) + ', ' + (plot_height / 2 + plot_top_margin) + ')' + 
       'rotate(-90)')
 	.text('Number of Swipes');
-	
+
+// Add a line along the x-axis
+svg.append('line')
+	.attr('class', 'x-axis')
+    .attr('x1', plot_left_margin)
+    .attr('y1', plot_height + plot_top_margin)
+    .attr('x2', plot_width + plot_left_margin)
+    .attr('y2', plot_height + plot_top_margin);
+
+/*	
 // Create x-axis and y-axis
 var xaxis = d3.axisBottom(xScale)
 	.ticks(7);
@@ -111,6 +120,7 @@ svg.append('g')
   .attr('transform',
      'translate(' + margin + ', ' + margin + ')')
   .call(yaxis);
+  */
 
 
 // Written and Tested by Dennis
