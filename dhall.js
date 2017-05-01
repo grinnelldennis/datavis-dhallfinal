@@ -71,53 +71,68 @@ d3.select('#monday')
 var dateData = new Array;   // semester long grapah
 var timeData = new Array;   // day long
 
-//---Update View 
-function updateViewBar() {
-	// Scaling
-	//  finding Max
-	var maxSwipeBar = d3.max(dateData, d => d.DineIn);
-	// Drawing Bars
-}
-
-function updateViewLine() {
-	// Grouping...
-	// Scaling
-	//  finding Max
-	// Drawing lines
-}
 
 //---Filtering 
 // Filtering Conditions, update on handler click
-var dIsSelected = [true, true, true, true, true, true, true];
-var wIsSelected = null;		//initialize
-var dStart = null;	//initialize
-var dEnd = null;		//initialize
-var tStart = null;	//initialize
-var tEnd = null;		//initialize
+var wkDaySelected = [true, true, true, true, true, true, true];
 var dineIn = true;
 var dineOut = true;
-
 // Weekday Filter
-dateData.filter(function(d) {return dIsSelected[+d.Day];})
+dateData.filter(function(d) {return wkDaySelected[+d.Day];})
+
+// Data Array for Day Line Plot
+var dayData = [];
+function populateDayArray (a, d1, d3) {
+  dayData = new Array;
+  for (var i = 0; i < 52; i++) { 
+    dayData.push({ Time: (Math.floor(i/4)+7) + ":" + ((i%4)*15),
+                  DineIn: 0, DineOut: 0, Count: 0, AvgIn: 0, AvgOut: 0}); }
+  // dayData[52] stores maximum within data
+  dayData.push({Max: 0});
+  a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
+  for (var row of a) {
+    var index = getArrayIndex(row.Date);
+    if (0 <= index && index < 52){
+      dayData[index].DineIn += +row.DineIn;
+      dayData[index].DineOut += +row.DineOut;
+      dayData[index].Count++;
+    }
+  }
+  for (var j = 0; j < 52; j++) {
+    dayData[52].Max = (dayData[j].DineIn > dayData[52].Max)? dayData[j].DineIn : dayData[52].Max;
+    dayData[j].AvgIn = dayData[j].DineIn / dayData[j].Count;
+    dayData[j].AvgOut = dayData[j].DineOut / dayData[j].Count;
+  }
+}
+function getArrayIndex (d) {
+  return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
+}
 
 
-// Filtering Data for Week Stack Plot
+// Data Array for Week Stack Plot
 var weekData = [];
-
 function populateWeekArray (a, d1, d3, w1, w3) {
   weekData = new Array;
   // initialize empty array
-  for (var i = 0; i < 7; i++) { weekData.push({Day: i, DineIn: 0, DineOut: 0, wkCount: 0}); }
-  // filter data to get relevant data
+  for (var i = 0; i < 7; i++) 
+    weekData.push({Day: i, DineIn: 0, DineOut: 0, wkCount: 0, AvgOut: 0, AvgIn: 0}); 
+  // initilizing 8th cell to store maximum 
+  weekData.push({Max: 0});
+  // filter data 
   a = a.filter(function(d) { return +w1 <= +d.Week && +d.Week < +w3; });
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
-  console.log(a.length);
   for (var row of a) { 
     if (parseInt(row.DineIn) != 0) {
       weekData[+row.Day].DineIn += +row.DineIn; 
       weekData[+row.Day].DineOut += +row.DineOut; 
       weekData[+row.Day].wkCount++;
-    }     
+    } 
+  }
+  // finding maximum
+  for (var j = 0; j < 7; j++){ 
+    weekData[7].Max = (weekData[j].DineIn > weekData[7].Max)? weekData[j].DineIn : weekData[7].Max;
+    weekData[j].AvgIn = weekData[j].DineIn / weekData[j].Count;
+    weekData[j].AvgOut = weekData[j].DineOut / weekData[j].Count;
   }
 }
 
@@ -134,10 +149,6 @@ d3.queue()
 		processCsvData(f2015);
 		processCsvData(s2015);
 		processCsvData(s2016);
-
-		// Updates Graphs
-		updateViewBar();
-		updateViewLine();
 })
 
 
@@ -160,12 +171,11 @@ var processCsvData = function (data) {
 		} else {
 			// process time information
 			var time = row.TimeIn;
-			var i = time.length;
+			var l = time.length;
 			var j = time.indexOf(":");
-			var apm = +time.substring(i-2,i-1);
-			var hour = +time.substring(0, 2);
-			hour = (apm === "P")? hour+=12 : hour;
-
+			var apm = time.substring(l-2,l-1);
+			var hour = +time.substring(0, j);
+			hour = ((apm === "P") && (+time.substring(0,j) != 12))? hour+=12 : hour;
 			// writing time into a Date object
 			var date = new Date(row.Date);
 			date.setUTCHours(hour);
