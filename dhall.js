@@ -65,22 +65,18 @@ d3.select('#monday')
   .on('change', function() { console.log(d3.select(this).node().checked); });
 
 
-// Written and Tested by Dennis
-
-// Data for drawing graph respectively
-var dateData = new Array;   // semester long grapah
-var timeData = new Array;   // day long
+// Below are Written and Tested by Dennis
 
 
 //---Filtering 
 // Filtering Conditions, update on handler click
 var wkDaySelected = [true, true, true, true, true, true, true];
+//dateData.filter(function(d) {return wkDaySelected[+d.Day];})
 var dineIn = true;
 var dineOut = true;
 // Weekday Filter
-dateData.filter(function(d) {return wkDaySelected[+d.Day];})
 
-// Data Array for Day Line Plot
+// Data Array for Day Line plot_height
 var dayData = [];
 function populateDayArray (a, d1, d3) {
   dayData = new Array;
@@ -89,6 +85,7 @@ function populateDayArray (a, d1, d3) {
                   DineIn: 0, DineOut: 0, Count: 0, AvgIn: 0, AvgOut: 0}); }
   // dayData[52] stores maximum within data
   dayData.push({Max: 0});
+  // filter data
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
   for (var row of a) {
     var index = getArrayIndex(row.Date);
@@ -98,6 +95,7 @@ function populateDayArray (a, d1, d3) {
       dayData[index].Count++;
     }
   }
+  // aggregate data 
   for (var j = 0; j < 52; j++) {
     dayData[52].Max = (dayData[j].DineIn > dayData[52].Max)? dayData[j].DineIn : dayData[52].Max;
     dayData[j].AvgIn = dayData[j].DineIn / dayData[j].Count;
