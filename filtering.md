@@ -1,3 +1,5 @@
+@Ben: I am going to omit the last element for both arrays and make them separate fields (probably a global) the next time I push a change. 
+
 ### populateDayArray()
 
 ```java
