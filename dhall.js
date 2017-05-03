@@ -65,9 +65,8 @@ d3.select('#monday')
   .on('change', function() { console.log(d3.select(this).node().checked); });
 
 
+
 // Below are Written and Tested by Dennis
-
-
 
 //---Filtering 
 // Filtering Conditions, update on handler click
@@ -78,71 +77,73 @@ var dineOut = true;
 // Weekday Filter
 
 // Data Array for Day Line plot_height
-var dayData = [];
+var dailyData = [];
 function populateDayArray (a, d1, d3) {
-  dayData = new Array;
+  dailyData = new Array;
+  var max = 0;
   for (var i = 0; i < 52; i++) { 
-    dayData.push({ Time: (Math.floor(i/4)+7) + ":" + ((i%4)*15),
+    dailyData.push({ Time: (Math.floor(i/4)+7) + ":" + ((i%4)*15),
                   DineIn: 0, DineOut: 0, Count: 0, AvgIn: 0, AvgOut: 0}); }
-  // dayData[52] stores maximum within data
-  dayData.push({Max: 0});
-  // filter data
+  // filter option
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
   for (var row of a) {
     var index = getArrayIndex(row.Date);
     if (0 <= index && index < 52){
-      dayData[index].DineIn += +row.DineIn;
-      dayData[index].DineOut += +row.DineOut;
-      dayData[index].Count++;
+      dailyData[index].DineIn += +row.DineIn;
+      dailyData[index].DineOut += +row.DineOut;
+      dailyData[index].Count++;
     }
   }
-  // aggregate data 
+  // aggregates data 
   for (var j = 0; j < 52; j++) {
-    dayData[52].Max = (dayData[j].DineIn > dayData[52].Max)? dayData[j].DineIn : dayData[52].Max;
-    dayData[j].AvgIn = dayData[j].DineIn / dayData[j].Count;
-    dayData[j].AvgOut = dayData[j].DineOut / dayData[j].Count;
+    dailyData[j].AvgIn = dailyData[j].DineIn / dailyData[j].Count;
+    dailyData[j].AvgOut = dailyData[j].DineOut / dailyData[j].Count;
+    max = (dailyData[j].AvgIn > max)? dailyData[j].AvgIn : max;
   }
+  // dailyData[52] stores maximum within data
+  dailyData.push({Max: max});
 }
+
 function getArrayIndex (d) {
   return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
 }
 
-
 // Data Array for Week Stack Plot
-var weekData = [];
+var weeklyData = [];
 function populateWeekArray (a, d1, d3, w1, w3) {
-  weekData = new Array;
+  weeklyData = new Array;
+  var max = 0;
   // initialize empty array
   for (var i = 0; i < 7; i++) 
-    weekData.push({Day: i, DineIn: 0, DineOut: 0, Count: 0, AvgOut: 0, AvgIn: 0}); 
-  // initilizing 8th cell to store maximum 
-  weekData.push({Max: 0});
+    weeklyData.push({Day: i, DineIn: 0, DineOut: 0, Count: 0, AvgOut: 0, AvgIn: 0}); 
   // filter data 
   a = a.filter(function(d) { return +w1 <= +d.Week && +d.Week < +w3; });
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
   for (var row of a) { 
-    if (parseInt(row.DineIn) != 0) {
-      weekData[+row.Day].DineIn += +row.DineIn; 
-      weekData[+row.Day].DineOut += +row.DineOut; 
-      weekData[+row.Day].Count++;
+    if (+row.DineIn != 0) {
+      weeklyData[+row.Day].DineIn += +row.DineIn; 
+      weeklyData[+row.Day].DineOut += +row.DineOut; 
+      weeklyData[+row.Day].Count++;
     } 
   }
   // finding maximum
   for (var j = 0; j < 7; j++){ 
-    weekData[7].Max = (weekData[j].DineIn > weekData[7].Max)? weekData[j].DineIn : weekData[7].Max;
-    weekData[j].AvgIn = weekData[j].DineIn / weekData[j].Count;
-    weekData[j].AvgOut = weekData[j].DineOut / weekData[j].Count;
+    weeklyData[j].AvgIn = weeklyData[j].DineIn / weeklyData[j].Count;
+    weeklyData[j].AvgOut = weeklyData[j].DineOut / weeklyData[j].Count;
+    max = (weeklyData[j].AvgIn > max)? weeklyData[j].AvgIn : max;
   }
+  // initilizing 8th cell to store maximum 
+  weeklyData.push({Max: max});
 }
 
-// converting to d3.stacks format
-var weekDataStack = [];
+// Converts weeklyData into d3.stacks() format
+var weeklyData_stacked = [];
 function convertWeekData () {
   // pushes two array objects onto encapsulating array
-  for (var i = 0; i < 2; i++) { weekDataStack.push([]); }
-  // pushes averages onto weekArray
-  for (var i = 0; i < 7; i++) { weekDataStack[0].push({ x: i, y: weekData[i].AvgIn }); } 
-  for (var i = 0; i < 7; i++) { weekDataStack[1].push({ x: i, y: weekData[i].AvgOut }); } 
+  for (var i = 0; i < 2; i++) { weeklyData_stacked.push([]); }
+  // pushes averages onto weekly data for d3
+  for (var i = 0; i < 7; i++) { weeklyData_stacked[0].push({ x: i, y: weeklyData[i].AvgIn }); } 
+  for (var i = 0; i < 7; i++) { weeklyData_stacked[1].push({ x: i, y: weeklyData[i].AvgOut }); } 
 }
 
 //---Loading CSV
@@ -159,42 +160,33 @@ d3.queue()
 		processCsvData(s2016);
 })
 
-
-// Array Objects to Hold Aggregated Data
-var trafficByFften = new Array(); 
+// Array Objects Holding Aggregated Data
+var trafficByFifteen = new Array(); 
 var trafficByDay = new Array();
 
-var processCsvData = function (data) {
-	// Populating array with every row in csv sheets 
+function processCsvData (data) {
+	// populates array with every row in csv sheets 
 	for (var row of data) {
 		if (row.Dash == "DayTotals:") {
-			// pushing single day totals onto separate array
+			// pushes each single-day-total onto an element
 			trafficByDay.push ({
 				Date: new Date(row.Date),
-				Day: row.Day,
-				Week: row.Week,
-				DineIn: row.DineIn,
-				DineOut: row.DineOut
+				Day: row.Day, Week: row.Week,
+				DineIn: row.DineIn, DineOut: row.DineOut
 			});
 		} else {
-			// process time information
-			var time = row.TimeIn;
-			var l = time.length;
-			var j = time.indexOf(":");
-			var apm = time.substring(l-2,l-1);
-			var hour = +time.substring(0, j);
-			hour = ((apm === "P") && (+time.substring(0,j) != 12))? hour+=12 : hour;
-			// writing time into a Date object
-			var date = new Date(row.Date);
-			date.setUTCHours(hour);
-			date.setUTCMinutes(+time.substring(j+1, j+3));
-
-			// popuating row onto object
-			trafficByFften.push({
-				Date: date,
-				DineIn: row.DineIn,
-				DineOut: row.DineOut
-			});
+			// processes time information
+			var t = row.TimeIn;
+			var j = t.indexOf(":");
+			var hour = +t.substring(0, j);
+      var noon = (t.substring(t.length-2, t.length-1) === "P") && (hour != 12);
+			hour = (noon)? hour+=12 : hour;
+			// defines a Date object
+			var d = new Date(row.Date);
+			d.setUTCHours(hour);
+			d.setUTCMinutes(+t.substring(j+1, j+3));
+			// populates row into object
+			trafficByFifteen.push({ Date: d, DineIn: row.DineIn,	DineOut: row.DineOut });
 		}
 	}
 }
