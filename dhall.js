@@ -19,7 +19,7 @@ var svg_height = 400;
 // Set up margins for our plot area
 var plot_left_margin = 30;
 var plot_right_margin = 10;
-var plot top_margin = 30;
+var plot_top_margin = 30;
 var plot_bottom_margin = 30;
 
 // Compute available plot area now that we know the margins
@@ -32,7 +32,7 @@ var label_height = 12 // Does not change font size, just an estimate
 var label_spacing = 8;
 
 // Helper function to compute a bar's x position (left edge)
-var bar_x_pos = fucntion(d, i) {
+var bar_x_pos = function(d, i) {
 	// Calculate the spacing so we leave the same amount of space between
 	// every two bars and on the left and right edges of the plot
 
@@ -163,18 +163,14 @@ dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
 // Time Range Filter
 timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
 
-// This code sets up a handler for the #monday 
-d3.select('#monday')
-// Set up a default click handler, which is called at the end of any click action
-window.onclick = blankClick;
 
 //This code sets up handlers for our check boxes
 // This code sets up a handler for the #Dining in 
-d3.select('#Dining in')
+d3.select('#diningin')
   .on('change', function() { console.log(d3.select(this).node().checked); });
 
 // This code sets up a handler for the #To-Go Box
-d3.select('#To-Go Box')
+d3.select('#togo')
   .on('change', function() { console.log(d3.select(this).node().checked); });
 
 // This code sets up the handler for the drop down menus
@@ -184,6 +180,7 @@ d3.select('#semester')
     console.log(d3.select(this).node().value);
   });
 
+	
 // Week drop down
 d3.select('#week')
   .on('change', function() {

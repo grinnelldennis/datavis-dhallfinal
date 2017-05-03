@@ -9,12 +9,11 @@
   </head>
   <body>
     <h1>Grinnell College Dining Hall </h1>
-    <script type="text/javascript" src="dhall.js"></script>
 
 
 	<h4>Semester</h4>
           <select id="semester">
-            <option value="all" selected>All</option>
+            <option value="allsem" selected>All</option>
             <option value="F14">Fall 2014</option>
             <option value="S15">Spring 2015</option>
 	    <option value="F15">Fall 2015</option>
@@ -24,7 +23,7 @@
 
 	<h4>Week</h4>
           <select id="week">
-            <option value="all" selected>All</option>
+            <option value="allweek" selected>All</option>
             <option value="1">Week 1</option>
             <option value="2">Week 2</option>
 	    <option value="3">Week 3</option>
@@ -44,7 +43,7 @@
 
 	<h4>Day of the Week</h4>
           <select id="day">
-            <option value="all" selected>All</option>
+            <option value="allday" selected>All</option>
             <option value="monday">Monday</option>
             <option value="tuesday">Tuesday</option>
 	    <option value="wednesday">Wednesday</option>
@@ -57,10 +56,13 @@
 	
 	<h4>Dining Option</h4>
 	<div class="checkbox">
-	  <label><input id="Dining in" type="checkbox" checked> Dining In</label>
+	  <label><input id="diningin" type="checkbox" checked> Dining In</label>
 	</div>
 	<div class="checkbox">
-	  <label><input id="To-Go Box" type="checkbox" checked> To-Go Box</label>
+	  <label><input id="togo" type="checkbox" checked> To-Go Box</label>
 	</div>
+
+
+<script type="text/javascript" src="dhall.js"></script>
   </body>
 </html>
