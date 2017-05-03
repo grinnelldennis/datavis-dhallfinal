@@ -139,6 +139,7 @@ function populateWeekArray (a, d1, d3, w1, w3) {
 // Converts weeklyData into d3.stacks() format
 var weeklyData_stacked = [];
 function convertWeeklyData () {
+  weeklyData_stacked = new Array;
   // pushes two array objects onto encapsulating array
   for (var i = 0; i < 2; i++) { weeklyData_stacked.push([]); }
   // pushes averages onto weekly data for d3

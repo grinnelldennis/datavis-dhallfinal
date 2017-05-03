@@ -1,4 +1,7 @@
-@Ben: I am going to omit the last element for both arrays and make them separate fields (probably a global) the next time I push a change. Depending on what you need I could also include a sum attribute for each of the objects. 
+### convertWeeklyData() 
+
+`convertWeeklyData()` uses, non-destructively, `weeklyData` array to convert its data, stored in `weeklyData_stacked` for the use of d3.stacks() in the format of `[ [{x: 1, y: y1}, {x: 2, y: y1},...{x: n, y: y1}], [{x: 1, y: y2}, {x: 2, y: y2},...{x: n, y: y2}]]`.
+
 
 ### populateDayArray()
 
