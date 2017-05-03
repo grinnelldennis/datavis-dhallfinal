@@ -68,6 +68,7 @@ d3.select('#monday')
 // Below are Written and Tested by Dennis
 
 
+
 //---Filtering 
 // Filtering Conditions, update on handler click
 var wkDaySelected = [true, true, true, true, true, true, true];
@@ -113,7 +114,7 @@ function populateWeekArray (a, d1, d3, w1, w3) {
   weekData = new Array;
   // initialize empty array
   for (var i = 0; i < 7; i++) 
-    weekData.push({Day: i, DineIn: 0, DineOut: 0, wkCount: 0, AvgOut: 0, AvgIn: 0}); 
+    weekData.push({Day: i, DineIn: 0, DineOut: 0, Count: 0, AvgOut: 0, AvgIn: 0}); 
   // initilizing 8th cell to store maximum 
   weekData.push({Max: 0});
   // filter data 
@@ -123,7 +124,7 @@ function populateWeekArray (a, d1, d3, w1, w3) {
     if (parseInt(row.DineIn) != 0) {
       weekData[+row.Day].DineIn += +row.DineIn; 
       weekData[+row.Day].DineOut += +row.DineOut; 
-      weekData[+row.Day].wkCount++;
+      weekData[+row.Day].Count++;
     } 
   }
   // finding maximum
@@ -134,6 +135,15 @@ function populateWeekArray (a, d1, d3, w1, w3) {
   }
 }
 
+// converting to d3.stacks format
+var weekDataStack = [];
+function convertWeekData () {
+  // pushes two array objects onto encapsulating array
+  for (var i = 0; i < 2; i++) { weekDataStack.push([]); }
+  // pushes averages onto weekArray
+  for (var i = 0; i < 7; i++) { weekDataStack[0].push({ x: i, y: weekData[i].AvgIn }); } 
+  for (var i = 0; i < 7; i++) { weekDataStack[1].push({ x: i, y: weekData[i].AvgOut }); } 
+}
 
 //---Loading CSV
 d3.queue()

@@ -23,7 +23,7 @@
 ### populateWeekArray()
 
 ```java
-@param  a   an array
+@param  a   an array // 
 @param  d1  a date object
 @param  d3  a date object
 @param  w1  a number
@@ -44,10 +44,10 @@
 
 ### Examples
 
-`populateDayArray(trafficByFften, new Date("04/06/2015"), new Date("04/07/2015"))` filters and populates `dayData[]` with data between APR06/15 to APR07/15.
-`dayData` shows 52 objetcs containing the data
-`dayData[index].AvgIn` & `dayData[index].AvgOut` would provide the necessary data to plot the graph.
-`dayData[7]` would provide the `Max` field needed for scaling. 
+- `populateDayArray(trafficByFften, new Date("04/06/2015"), new Date("04/07/2015"))` filters and populates `dayData[]` with data between APR06/15 to APR07/15.
+- `dayData` shows 52 objetcs containing the data
+- `dayData[index].AvgIn` & `dayData[index].AvgOut` would provide the necessary data to plot the graph.
+- `dayData[7]` would provide the `Max` field needed for scaling. 
 
 
 
