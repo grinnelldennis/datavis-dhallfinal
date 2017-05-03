@@ -94,11 +94,11 @@ function populateDayArray (a, d1, d3) {
       dailyData[index].Count++;
     }
   }
-  // aggregates data 
-  for (var j = 0; j < 52; j++) {
-    dailyData[j].AvgIn = dailyData[j].DineIn / dailyData[j].Count;
-    dailyData[j].AvgOut = dailyData[j].DineOut / dailyData[j].Count;
-    max = (dailyData[j].AvgIn > max)? dailyData[j].AvgIn : max;
+  // finds average data 
+  for (var fifteen of dailyData) {
+    fifteen.AvgIn = fifteen.DineIn / fifteen.Count;
+    fifteen.AvgOut = fifteen.DineOut / fifteen.Count;
+    max = (fifteen.AvgIn > max)? fifteen.AvgIn : max;
   }
   // dailyData[52] stores maximum within data
   dailyData.push({Max: max});
@@ -113,7 +113,7 @@ var weeklyData = [];
 function populateWeekArray (a, d1, d3, w1, w3) {
   weeklyData = new Array;
   var max = 0;
-  // initialize empty array
+  // initializes empty array
   for (var i = 0; i < 7; i++) 
     weeklyData.push({Day: i, DineIn: 0, DineOut: 0, Count: 0, AvgOut: 0, AvgIn: 0}); 
   // filter data 
@@ -126,24 +126,26 @@ function populateWeekArray (a, d1, d3, w1, w3) {
       weeklyData[+row.Day].Count++;
     } 
   }
-  // finding maximum
-  for (var j = 0; j < 7; j++){ 
-    weeklyData[j].AvgIn = weeklyData[j].DineIn / weeklyData[j].Count;
-    weeklyData[j].AvgOut = weeklyData[j].DineOut / weeklyData[j].Count;
-    max = (weeklyData[j].AvgIn > max)? weeklyData[j].AvgIn : max;
+  // finds maximum
+  for (var day of weeklyData) {
+    day.AvgIn = day.DineIn / day.Count;
+    day.AvgOut = day.DineOut / day.Count;
+    max = (day.AvgIn > max)? day.AvgIn : max;
   }
-  // initilizing 8th cell to store maximum 
+  // weeklyData[8] stores maximum 
   weeklyData.push({Max: max});
 }
 
 // Converts weeklyData into d3.stacks() format
 var weeklyData_stacked = [];
-function convertWeekData () {
+function convertWeeklyData () {
   // pushes two array objects onto encapsulating array
   for (var i = 0; i < 2; i++) { weeklyData_stacked.push([]); }
   // pushes averages onto weekly data for d3
-  for (var i = 0; i < 7; i++) { weeklyData_stacked[0].push({ x: i, y: weeklyData[i].AvgIn }); } 
-  for (var i = 0; i < 7; i++) { weeklyData_stacked[1].push({ x: i, y: weeklyData[i].AvgOut }); } 
+  for (var i = 0; i < weeklyData.length-1; i++) { 
+    weeklyData_stacked[0].push({ x: i, y: weeklyData[i].AvgIn }); 
+    weeklyData_stacked[1].push({ x: i, y: weeklyData[i].AvgOut }); 
+  } 
 }
 
 //---Loading CSV
