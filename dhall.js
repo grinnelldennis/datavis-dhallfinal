@@ -37,12 +37,11 @@ var bar_width = 80;
 var label_height = 12 // Does not change font size, just an estimate
 var label_spacing = 8;
 
-<<<<<<< HEAD
 // Set-up scales for stacked bar chart
 var xScale = d3.scale.Band()
 	.domain(d3.range(weeklyData.length))
 	.rangeRoundBands([0, plot_width], 0.05);
-=======
+
 // Helper function to compute a bar's x position (left edge)
 var bar_x_pos = function(d, i) {
 	// Calculate the spacing so we leave the same amount of space between
@@ -60,7 +59,6 @@ var bar_x_pos = function(d, i) {
 	// Add the plot's left margin and return
 	return bar_position + plot_left_margin;
 };
->>>>>>> 84c7fc2aa206ca2dc077813378406f55d30b68c9
 
 var yScale = d3.scale.linear()
 	.domain([0,
@@ -190,7 +188,6 @@ function populateDayArray (a, d1, d3) {
   dailyData.push({Max: max});
 }
 
-<<<<<<< HEAD
 function getArrayIndex (d) {
   return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
 }
@@ -239,7 +236,6 @@ function convertWeeklyData () {
 */
 
 //---Loading CSV
-=======
 
 //This code sets up handlers for our check boxes
 // This code sets up a handler for the #Dining in 
@@ -271,7 +267,6 @@ d3.select('#day')
   });
 
 // Loading csv data using d3
->>>>>>> 84c7fc2aa206ca2dc077813378406f55d30b68c9
 d3.queue()
 	.defer(d3.csv, 'formatted csv/2014f.csv')
 	.defer(d3.csv, 'formatted csv/2015f.csv')
@@ -315,7 +310,6 @@ function processCsvData (data) {
 		}
 	}
 }
-<<<<<<< HEAD
 
 /*
 // Line Graph dining hall traffic over time
@@ -355,5 +349,4 @@ var xscale = d3.scaleTime().range([0, width])
 var yscale = d3.scaleLinear().
 }
 */
-=======
->>>>>>> 84c7fc2aa206ca2dc077813378406f55d30b68c9
+
