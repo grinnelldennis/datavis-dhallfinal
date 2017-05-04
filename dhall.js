@@ -37,10 +37,30 @@ var bar_width = 80;
 var label_height = 12 // Does not change font size, just an estimate
 var label_spacing = 8;
 
+<<<<<<< HEAD
 // Set-up scales for stacked bar chart
 var xScale = d3.scale.Band()
 	.domain(d3.range(weeklyData.length))
 	.rangeRoundBands([0, plot_width], 0.05);
+=======
+// Helper function to compute a bar's x position (left edge)
+var bar_x_pos = function(d, i) {
+	// Calculate the spacing so we leave the same amount of space between
+	// every two bars and on the left and right edges of the plot
+
+	// Figure out how much space we need between our bars
+	var num_bars = 7;
+	var num_bar_gaps = num_bars +1;
+	var gap_size = (plot_width - num_bars * bar_width) / num_bar_gaps;
+
+	// Bar index zero is one bar gap right of the left edge of the plot.
+	// Bar index one is two bar gaps and one bar width to the right.
+	var bar_position = bar_width * i + gap_size * (i + 1);
+
+	// Add the plot's left margin and return
+	return bar_position + plot_left_margin;
+};
+>>>>>>> 84c7fc2aa206ca2dc077813378406f55d30b68c9
 
 var yScale = d3.scale.linear()
 	.domain([0,
@@ -170,6 +190,7 @@ function populateDayArray (a, d1, d3) {
   dailyData.push({Max: max});
 }
 
+<<<<<<< HEAD
 function getArrayIndex (d) {
   return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
 }
@@ -218,6 +239,39 @@ function convertWeeklyData () {
 */
 
 //---Loading CSV
+=======
+
+//This code sets up handlers for our check boxes
+// This code sets up a handler for the #Dining in 
+d3.select('#diningin')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+
+// This code sets up a handler for the #To-Go Box
+d3.select('#togo')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+
+// This code sets up the handler for the drop down menus
+// Semester drop down
+d3.select('#semester')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+	
+// Week drop down
+d3.select('#week')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+// Day of week drop down
+d3.select('#day')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+// Loading csv data using d3
+>>>>>>> 84c7fc2aa206ca2dc077813378406f55d30b68c9
 d3.queue()
 	.defer(d3.csv, 'formatted csv/2014f.csv')
 	.defer(d3.csv, 'formatted csv/2015f.csv')
@@ -261,6 +315,7 @@ function processCsvData (data) {
 		}
 	}
 }
+<<<<<<< HEAD
 
 /*
 // Line Graph dining hall traffic over time
@@ -300,3 +355,5 @@ var xscale = d3.scaleTime().range([0, width])
 var yscale = d3.scaleLinear().
 }
 */
+=======
+>>>>>>> 84c7fc2aa206ca2dc077813378406f55d30b68c9

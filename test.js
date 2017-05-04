@@ -2,12 +2,17 @@
 
 //This code sets up handlers for our check boxes
 // This code sets up a handler for the #Dining in 
-d3.select('#Dining in')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
+d3.select('#diningin')
+  .on('change', function() { 
+    console.log(d3.select(this).node().checked);
+ });
 
 // This code sets up a handler for the #To-Go Box
-d3.select('#To-Go Box')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
+d3.select('#togo')
+  .on('change', function() { 
+    console.log(d3.select(this).node().checked);
+ });
+
 
 // This code sets up the handler for the drop down menus
 // Semester drop down
@@ -27,5 +32,7 @@ d3.select('#day')
   .on('change', function() {
     console.log(d3.select(this).node().value);
   });
+
+
 
 console.log("Hello")
