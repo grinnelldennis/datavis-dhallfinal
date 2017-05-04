@@ -1,4 +1,3 @@
-
 // Build an array of days of week
 var daysOfWeek = [
     'Sunday',
@@ -10,7 +9,14 @@ var daysOfWeek = [
     'Saturday'
 ];
 
+populateWeekArray(trafficByDay, new Date('04/07/1996'), new Date('04/07/2020'), -100, 10);
 
+// Set-up for stacked bar chart
+var stack = d3.stack()
+	.keys(['AvgIn', 'AvgOut']);
+
+// Manipulate data array to be able to create stacked bar chart
+var stackedArr = stack(weeklyData);
 
 // Set up the width and height of the entire SVG
 var svg_width = 800;
@@ -19,7 +25,7 @@ var svg_height = 400;
 // Set up margins for our plot area
 var plot_left_margin = 30;
 var plot_right_margin = 10;
-var plot top_margin = 30;
+var plot_top_margin = 30;
 var plot_bottom_margin = 30;
 
 // Compute available plot area now that we know the margins
@@ -31,40 +37,54 @@ var bar_width = 80;
 var label_height = 12 // Does not change font size, just an estimate
 var label_spacing = 8;
 
-// Helper function to compute a bar's x position (left edge)
-var bar_x_pos = fucntion(d, i) {
-	// Calculate the spacing so we leave the same amount of space between
-	// every two bars and on the left and right edges of the plot
+// Set-up scales for stacked bar chart
+var xScale = d3.scale.Band()
+	.domain(d3.range(weeklyData.length))
+	.rangeRoundBands([0, plot_width], 0.05);
 
-	// Figure out how much space we need between our bars
-	var num_bars = 7;
-	var num_bar_gaps = num_bars +1;
-	var gap_size = (plot_width - num_bars * bar_width) / num_bar_gaps;
+var yScale = d3.scale.linear()
+	.domain([0,
+			d3.max(stackedArr, function(d) {
+				return d3.max(d, function(d) {
+					return d[0] + d[1];
+				});
+			})
+	])
+	.range([0, plot_height]);
 
-	// Bar index zero is one bar gap right of the left edge of the plot.
-	// Bar index one is two bar gaps and one bar width to the right.
-	var bar_position = bar_width * i + gap_size * (i + 1);
-
-	// Add the plot's left margin and return
-	return bar_position + plot_left_margin;
-};
-
-// !!!!!!! need to calculate bar_height given object array !!!!!!
-var bar_height = function(d) {
-
-};
-
-// Helper function to compute a value labels' y position (top edge)
-var bar_y_pos = function(d, i) {
-	// Flip the y axis and add the top margin
-	return plot_height - bar_height(d) + plot_top_margin - 4;
-};
+// Create easy colors accessible from the 10-step ordinal scale
+var colors = d3.scaleOrdinal(d3.schemeCategory10);
 
 // Create SVG for stacked bar chart
-var svg = d3.select("body")
-	.append("svg")
-	.attr("width", svg_width)
-	.attr("height", svg_height);
+var svg = d3.select('body')
+	.append('svg')
+	.attr('width', svg_width)
+	.attr('height', svg_height);
+
+// Add a group for each row of data
+var groups = svg.selectAll('g')
+	.data(stackedArr)
+	.enter()
+	.append('g')
+	.style('fill', function(d, i) {
+		return colors(i);
+	});
+
+// Add a rect for each data value
+var rects = groups.selectAll('rect')
+	.data(function(d) { return d; })
+	.enter()
+	.append('rect')
+	.attr('x', function(d, i) {
+		return xScale(i);
+	})
+	.attr('y', function(d) {
+		return yScale(d[0]);
+	})
+	.attr('height', function(d) {
+		return yScale(d[1]);
+	})
+	.attr('width', xScale.bandwidth() - 5);
 
 // Generate our x-axis labels. Here we are searching for text tags with the
 // class x-axis. This allows us to distinguish x-axis labels from other text.
@@ -74,8 +94,8 @@ svg.selectAll('text.x-axis')
 	.append('text')
 		.attr('class', 'x-axis')
 		.attr('x', function(d, i) {
-			// The middle of the labe is just half a bar's width to the right of the bar
-			return bar_x_pos(d, i) + bar_width / 2;
+			// The middle of the label is just half a bar's width to the right of the bar
+			return xScale(i) + (xScale.bandwidth() - 5) / 2;
 		})
 		.attr('y', plot_top_margin + plot_height + label_spacing + label_height)
         .attr('text-anchor', 'middle')
@@ -101,102 +121,103 @@ svg.append('line')
     .attr('x2', plot_width + plot_left_margin)
     .attr('y2', plot_height + plot_top_margin);
 
-/*	
-// Create x-axis and y-axis
-var xaxis = d3.axisBottom(xScale)
-	.ticks(7);
+//This code sets up handlers for all of our check boxes
+// This code sets up a handler for the #monday 
+/*
+d3.select('#monday')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+*/
 
-var yaxis = d3.axisLeft(yScale);
-
-// Drawing the axes
-svg.append('g')
-  .attr('class', 'x-axis')
-  .attr('transform',
-	    'translate(' + margin + ', ' + (plot_height+ margin) + ')')
-  .call(xaxis);
-
-svg.append('g')
-  .attr('class','y-axis')
-  .attr('transform',
-     'translate(' + margin + ', ' + margin + ')')
-  .call(yaxis);
-  */
-
-
-// Written and Tested by Dennis
-
-// Data for drawing graph respectively
-var dateData = new Array;
-var timeData = new Array;
-
-//---Update View 
-function updateViewBar() {
-	// Scaling
-	//  finding Max
-	var maxSwipeBar = d3.max(dateData, d => d.DineIn);
-	// Drawing Bars
-}
-
-function updateViewLine() {
-	// Grouping...
-	// Scaling
-	// finding Max
-	// Drawing lines
-}
+var wkDaySelected = [true, true, true, true, true, true, true];
+//dateData.filter(function(d) {return wkDaySelected[+d.Day];})
+var dineIn = true;
+var dineOut = true;
+// Weekday Filter
 
 //---Filtering 
 // Filtering Conditions, update on handler click
-var dIsSelected = [true, true, true, true, true, true, true];
-var wIsSelected = null;		//initialize
-var dStart = null;	//initialize
-var dEnd = null;		//initialize
-var tStart = null;	//initialize
-var tEnd = null;		//initialize
+var wkDaySelected = [true, true, true, true, true, true, true];
+//dateData.filter(function(d) {return wkDaySelected[+d.Day];})
 var dineIn = true;
 var dineOut = true;
-
 // Weekday Filter
-dateData.filter(function(d) {return dIsSelected[+d.Day];})
-// Day Range Filter
-dateData.filter(function(d) {return +dStart <= +d && +d <= +dEnd; } )
 
-// Time Range Filter
-timeData.filter(function(d) {return +tStart <= +d && +d <= +tEnd; } )
+// Data Array for Day Line plot_height
+var dailyData = [];
+function populateDayArray (a, d1, d3) {
+  dailyData = new Array;
+  var max = 0;
+  for (var i = 0; i < 52; i++) { 
+    dailyData.push({ Time: (Math.floor(i/4)+7) + ":" + ((i%4)*15),
+                  DineIn: 0, DineOut: 0, Count: 0, AvgIn: 0, AvgOut: 0}); }
+  // filter option
+  a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
+  for (var row of a) {
+    var index = getArrayIndex(row.Date);
+    if (0 <= index && index < 52){
+      dailyData[index].DineIn += +row.DineIn;
+      dailyData[index].DineOut += +row.DineOut;
+      dailyData[index].Count++;
+    }
+  }
+  // finds average data 
+  for (var fifteen of dailyData) {
+    fifteen.AvgIn = fifteen.DineIn / fifteen.Count;
+    fifteen.AvgOut = fifteen.DineOut / fifteen.Count;
+    max = (fifteen.AvgIn > max)? fifteen.AvgIn : max;
+  }
+  // dailyData[52] stores maximum within data
+  dailyData.push({Max: max});
+}
 
-// This code sets up a handler for the #monday 
-d3.select('#monday')
-// Set up a default click handler, which is called at the end of any click action
-window.onclick = blankClick;
+function getArrayIndex (d) {
+  return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
+}
 
-//This code sets up handlers for our check boxes
-// This code sets up a handler for the #Dining in 
-d3.select('#Dining in')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
+// Data Array for Week Stack Plot
+var weeklyData = [];
+function populateWeekArray (a, d1, d3, w1, w3) {
+  weeklyData = new Array;
+  var max = 0;
+  // initializes empty array
+  for (var i = 0; i < 7; i++) 
+    weeklyData.push({Day: i, DineIn: 0, DineOut: 0, Count: 0, AvgOut: 0, AvgIn: 0}); 
+  // filter data 
+  a = a.filter(function(d) { return +w1 <= +d.Week && +d.Week < +w3; });
+  a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
+  for (var row of a) { 
+    if (+row.DineIn != 0) {
+      weeklyData[+row.Day].DineIn += +row.DineIn; 
+      weeklyData[+row.Day].DineOut += +row.DineOut; 
+      weeklyData[+row.Day].Count++;
+    } 
+  }
+  // finds maximum
+  for (var day of weeklyData) {
+    day.AvgIn = day.DineIn / day.Count;
+    day.AvgOut = day.DineOut / day.Count;
+    max = (day.AvgIn > max)? day.AvgIn : max;
+  }
+  // weeklyData[8] stores maximum 
+  weeklyData.push({Max: max});
+}
 
-// This code sets up a handler for the #To-Go Box
-d3.select('#To-Go Box')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
+/*
+// Converts weeklyData into d3.stacks() format
+var weeklyData_stacked = [];
+function convertWeeklyData () {
+  weeklyData_stacked = new Array;
+  // pushes two array objects onto encapsulating array
+  for (var i = 0; i < 2; i++) { weeklyData_stacked.push([]); }
+  // pushes averages onto weekly data for d3
+  for (var i = 0; i < weeklyData.length-1; i++) { 
+    weeklyData_stacked[0].push({ x: i, y: weeklyData[i].AvgIn }); 
+    weeklyData_stacked[1].push({ x: i, y: weeklyData[i].AvgOut }); 
+  } 
+}
+*/
 
-// This code sets up the handler for the drop down menus
-// Semester drop down
-d3.select('#semester')
-  .on('change', function() {
-    console.log(d3.select(this).node().value);
-  });
-
-// Week drop down
-d3.select('#week')
-  .on('change', function() {
-    console.log(d3.select(this).node().value);
-  });
-
-// Day of week drop down
-d3.select('#day')
-  .on('change', function() {
-    console.log(d3.select(this).node().value);
-  });
-
-// Loading csv data using d3
+//---Loading CSV
 d3.queue()
 	.defer(d3.csv, 'formatted csv/2014f.csv')
 	.defer(d3.csv, 'formatted csv/2015f.csv')
@@ -208,48 +229,74 @@ d3.queue()
 		processCsvData(f2015);
 		processCsvData(s2015);
 		processCsvData(s2016);
-
-		// Updates Graphs
-		updateViewBar();
-		updateViewLine();
 })
 
-// Array Objects to Hold Aggregated Data
-var trafficByFften = new Array(); 
+// Array Objects Holding Aggregated Data
+var trafficByFifteen = new Array(); 
 var trafficByDay = new Array();
 
-var processCsvData = function (data) {
-	// Populating array with every row in csv sheets 
+function processCsvData (data) {
+	// populates array with every row in csv sheets 
 	for (var row of data) {
 		if (row.Dash == "DayTotals:") {
-			// pushing single day totals onto separate array
+			// pushes each single-day-total onto an element
 			trafficByDay.push ({
 				Date: new Date(row.Date),
-				Day: row.Day,
-				Week: row.Week,
-				DineIn: row.DineIn,
-				DineOut: row.DineOut
+				Day: row.Day, Week: row.Week,
+				DineIn: row.DineIn, DineOut: row.DineOut
 			});
 		} else {
-			// process time information
-			var time = row.TimeIn;
-			var i = time.length;
-			var j = time.indexOf(":");
-			var apm = +time.substring(i-2,i-1);
-			var hour = +time.substring(0, 2);
-			hour = (apm === "P")? hour+=12 : hour;
-
-			// writing time into a Date object
-			var date = new Date(row.Date);
-			date.setUTCHours(hour);
-			date.setUTCMinutes(+time.substring(j+1, j+3));
-
-			// popuating row onto object
-			trafficByFften.push({
-				Date: date,
-				DineIn: row.DineIn,
-				DineOut: row.DineOut
-			});
+			// processes time information
+			var t = row.TimeIn;
+			var j = t.indexOf(":");
+			var hour = +t.substring(0, j);
+      var noon = (t.substring(t.length-2, t.length-1) === "P") && (hour != 12);
+			hour = (noon)? hour+=12 : hour;
+			// defines a Date object
+			var d = new Date(row.Date);
+			d.setUTCHours(hour);
+			d.setUTCMinutes(+t.substring(j+1, j+3));
+			// populates row into object
+			trafficByFifteen.push({ Date: d, DineIn: row.DineIn,	DineOut: row.DineOut });
 		}
 	}
 }
+
+/*
+// Line Graph dining hall traffic over time
+var svg_height_2 = 800;
+var svg_width_2 = 800;
+var margin_2 = 100;
+var plot_width_2 = svg_width - 2 * margin;
+var plot_height_2 = svg_height - 2 * margin;
+
+// Create SVG for line plot
+var svg_2 = d3.select('body').append('svg')
+.attr('width', svg_width_2)
+.attr('height', svg_height);
+
+// x-axis label
+svg_2.append('text')
+	.attr('class', 'x-axis')
+	.attr('x', margin + plot_width / 2)
+	.atter('y', 3/2 * margin + plot_height)
+	.text('Time');
+
+// y-axis label
+svg_2.append('text')
+   	.attr('class', 'y-axis')
+    .attr('text-anchor', 'middle')
+    .attr('transform',
+      	'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' +
+      	'rotate(-90)')
+    .text('Number of Swipes');
+
+populateDayArray(trafficByFften, new Date("04/06/1997"), new Date("04/08/2019"));
+
+var max_avgin_listing = d3.max(dayData.AvgIn);
+var max_avgout_listing = d3.max(dayData.AvgOut);
+
+var xscale = d3.scaleTime().range([0, width])
+var yscale = d3.scaleLinear().
+}
+*/
