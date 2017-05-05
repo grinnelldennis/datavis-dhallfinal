@@ -12,8 +12,16 @@ d3.select('#togo')
 d3.select('#semester')
   .on('change', function() {
     console.log(d3.select(this).node().value);
+    var semSelector = d3.select(this).node().value;
+    updateStack();
   });
 
+var semSelector = 0;
+var semester = [["06/01/2014", "06/01/2016"],
+				["06/01/2014", "01/01/2015"],
+				["01/01/2015", "06/01/2015"],
+				["06/01/2015", "01/01/2016"],
+				["01/01/2016", "06/01/2016"]];
 	
 // Week drop down
 d3.select('#week')
@@ -260,21 +268,17 @@ function convertWeeklyData () {
 
 //---Loading CSV
 
-function update() {
-  d3.select('#diningin')
-	.on('change', function() { dineIn = d3.select(this).node().checked);});
-  d3.select('#togo')
-	.on('change', function() { dineIn = d3.select(this).node().checked);});
-  d3.select('#day')
-	.on('change', function() { 
-		wkDaySelected = [false, false, false, false, false, false, false];
-		wkDaySelected[d3.select(this).node().value-1] = true;
-  d3.select('#week')
-		wkSelected = Array(15).fill(false);
-		wkSelected[d3.select(this).node().value-1] = true;
-		
-  });
+
+function updateStack(week) {
+	populateWeekArray(trafficByDay, new Date(semester[semSelector][0]),  new Date(semester[semSelector][1])
 }
+
+
+function updateLine(day) {
+		populateDayArray(trafficByFifteen,
+
+}
+
 
 // Loading csv data using d3
 d3.queue()
