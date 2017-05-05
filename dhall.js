@@ -75,6 +75,7 @@ function populateWeekArray (a, d1, d3, w1, w3) {
   weeklyData.push({Max: max});
 }
 
+/*
 // Converts weeklyData into d3.stacks() format
 var weeklyData_stacked = [];
 function convertWeeklyData () {
@@ -87,6 +88,7 @@ function convertWeeklyData () {
     weeklyData_stacked[1].push({ x: i, y: weeklyData[i].AvgOut }); 
   } 
 }
+*/
 
 //---Loading CSV
 d3.queue()
@@ -100,6 +102,9 @@ d3.queue()
 		processCsvData(f2015);
 		processCsvData(s2015);
 		processCsvData(s2016);
+		// Populate a week array with the given contraints
+		populateWeekArray(trafficByDay, new Date('02/13/1996'), new Date('02/14/2020'), -100, 100);
+		displayStackedBar();
 })
 
 // Array Objects Holding Aggregated Data
@@ -157,115 +162,109 @@ var daysOfWeek = [
     'Saturday'
 ];
 
-console.log(trafficByDay);
+function displayStackedBar() {
+	// Set-up for stacked bar chart
+	var stack = d3.stack()
+		.keys(['AvgIn', 'AvgOut']);
 
-// Populate a week array with the given contraints
-populateWeekArray(trafficByDay, new Date('02/13/1996'), new Date('02/14/2020'), -100, 100);
+	// Manipulate data array to be able to create stacked bar chart
+	var stackedArr = stack(weeklyData);
 
-// Testing array
-console.log(weeklyData);
+	// Set-up scales for stacked bar chart
+	var xScale = d3.scaleBand()
+		.domain(d3.range(weeklyData.length))
+		.range([0, plot_width], 0.05);
 
-// Set-up for stacked bar chart
-var stack = d3.stack()
-	.keys(['AvgIn', 'AvgOut']);
+	var yScale = d3.scaleLinear()
+		.domain([0,
+				d3.max(stackedArr, function(d) {
+					return d3.max(d, function(d) {
+						return d[0] + d[1];
+					});
+				})
+		])
+		.range([plot_height, 0]);
 
-// Manipulate data array to be able to create stacked bar chart
-var stackedArr = stack(weeklyData);
+	// Create easy colors accessible from the 10-step ordinal scale
+	var colors = d3.scaleOrdinal(d3.schemeCategory10);
 
-// Set-up scales for stacked bar chart
-var xScale = d3.scaleBand()
-	.domain(d3.range(weeklyData.length))
-	.range([0, plot_width], 0.05);
+	// Create SVG for stacked bar chart
+	var svg = d3.select('body')
+		.append('svg')
+		.attr('width', svg_width)
+		.attr('height', svg_height);
 
-var yScale = d3.scaleLinear()
-	.domain([0,
-			d3.max(stackedArr, function(d) {
-				return d3.max(d, function(d) {
-					return d[0] + d[1];
-				});
-			})
-	])
-	.range([0, plot_height]);
+	// Add a group for each row of data
+	var groups = svg.selectAll('g')
+		.data(stackedArr)
+		.enter()
+		.append('g')
+		.style('fill', function(d, i) {
+			return colors(i);
+		});
 
-// Create easy colors accessible from the 10-step ordinal scale
-var colors = d3.scaleOrdinal(d3.schemeCategory10);
-
-// Create SVG for stacked bar chart
-var svg = d3.select('body')
-	.append('svg')
-	.attr('width', svg_width)
-	.attr('height', svg_height);
-
-// Add a group for each row of data
-var groups = svg.selectAll('g')
-	.data(stackedArr)
-	.enter()
-	.append('g')
-	.style('fill', function(d, i) {
-		return colors(i);
-	});
-
-// Add a rect for each data value
-var rects = groups.selectAll('rect')
-	.data(function(d) { return d; })
-	.enter()
-	.append('rect')
-	.attr('x', function(d, i) {
-		return xScale(i);
-	})
-	.attr('y', function(d) {
-		return yScale(d[0]);
-	})
-	.attr('height', function(d) {
-		return yScale(d[1]);
-	})
-	.attr('width', xScale.bandwidth() - 5);
-
-// Generate our x-axis labels. Here we are searching for text tags with the
-// class x-axis. This allows us to distinguish x-axis labels from other text.
-svg.selectAll('text.x-axis')
-	.data(daysOfWeek)
-	.enter()
-	.append('text')
-		.attr('class', 'x-axis')
+	// Add a rect for each data value
+	var rects = groups.selectAll('rect')
+		.data(function(d) { return d; })
+		.enter()
+		.append('rect')
 		.attr('x', function(d, i) {
-			// The middle of the label is just half a bar's width to the right of the bar
-			return 35 + xScale(i) + (xScale.bandwidth() - 5) / 2;
+			return xScale(i) + 2 * margin;
 		})
-		.attr('y', margin + plot_height + label_spacing + label_height)
-        .attr('text-anchor', 'middle')
-		.text(function(d) { return d; });
+		.attr('y', function(d) {
+			return yScale(d[0]);
+		})
+		.attr('height', function(d) {
+			return yScale(d[1]);	
+		})
+		.attr('width', xScale.bandwidth() - 5);
 
-// x-axis title
-svg.append('text')
-    .attr('class', 'x-axis')
-  	.attr('x', plot_width / 2)
-  	.attr('y', 2 * margin + plot_height + label_height)
-  	.text('Days of the Week');
+	// Generate our x-axis labels. Here we are searching for text tags with the
+	// class x-axis. This allows us to distinguish x-axis labels from other text.
+	svg.selectAll('text.x-axis')
+		.data(daysOfWeek)
+		.enter()
+		.append('text')
+			.attr('class', 'x-axis')
+			.attr('x', function(d, i) {
+				// The middle of the label is just half a bar's width to the right of the bar
+				return 68 + xScale(i) + (xScale.bandwidth() - 5) / 2;
+			})
+			.attr('y', margin + plot_height + label_spacing + label_height)
+	        .attr('text-anchor', 'middle')
+			.text(function(d) { return d; });
 
-// Add the rotated y-axis title
-svg.append('text')
-	.attr('class', 'y-axis')
-	.attr('text-anchor', 'middle')
-	.attr('transform',
-	  // Translate and rotate the label into place. This rotates the label
-      // around 0,0 in its original position, so the label rotates around its
-      // center point
-      'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
-      'rotate(-90)')
-	.text('Number of Swipes');
+	// x-axis title
+	svg.append('text')
+	    .attr('class', 'x-axis')
+	  	.attr('x', plot_width / 2)
+	  	.attr('y', 2 * margin + plot_height + label_height)
+	  	.text('Days of the Week');
 
-// Create x-axis and y-axis
-var xaxis = d3.axisBottom(xScale);
-var yaxis = d3.axisLeft(yScale);
+	// Add the rotated y-axis title
+	svg.append('text')
+		.attr('class', 'y-axis')
+		.attr('text-anchor', 'middle')
+		.attr('transform',
+		  // Translate and rotate the label into place. This rotates the label
+	      // around 0,0 in its original position, so the label rotates around its
+	      // center point
+	      'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
+	      'rotate(-90)')
+		.text('Number of Swipes');
 
-svg.append('g')
-    .attr('transform', 'translate(' + margin + ', ' + (plot_height + margin) + ')')
-    .call(xaxis);
+	// Create x-axis and y-axis
+	var xaxis = d3.axisBottom(xScale);
+	var yaxis = d3.axisLeft(yScale);
 
-svg.append('g')
-    .attr('transform', 'translate(' + margin + ', ' + margin + ')')
-    .call(yaxis);
+	svg.append('g')
+	    .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
+	    .call(xaxis);
+
+	svg.append('g')
+	    .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
+	    .call(yaxis);
+}
 
 /*
 // Line Graph dining hall traffic over time
