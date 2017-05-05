@@ -1,3 +1,32 @@
+//This code sets up handlers for our check boxes
+// This code sets up a handler for the #Dining in 
+d3.select('#diningin')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+
+// This code sets up a handler for the #To-Go Box
+d3.select('#togo')
+  .on('change', function() { console.log(d3.select(this).node().checked); });
+
+// This code sets up the handler for the drop down menus
+// Semester drop down
+d3.select('#semester')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+	
+// Week drop down
+d3.select('#week')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
+// Day of week drop down
+d3.select('#day')
+  .on('change', function() {
+    console.log(d3.select(this).node().value);
+  });
+
 // Build an array of days of week
 var daysOfWeek = [
     'Sunday',
@@ -139,12 +168,6 @@ svg.append('line')
     .attr('x2', plot_width + plot_left_margin)
     .attr('y2', plot_height + plot_top_margin);
 
-//This code sets up handlers for all of our check boxes
-// This code sets up a handler for the #monday 
-/*
-d3.select('#monday')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
-*/
 
 var wkDaySelected = [true, true, true, true, true, true, true];
 //dateData.filter(function(d) {return wkDaySelected[+d.Day];})
@@ -237,34 +260,21 @@ function convertWeeklyData () {
 
 //---Loading CSV
 
-//This code sets up handlers for our check boxes
-// This code sets up a handler for the #Dining in 
-d3.select('#diningin')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
-
-// This code sets up a handler for the #To-Go Box
-d3.select('#togo')
-  .on('change', function() { console.log(d3.select(this).node().checked); });
-
-// This code sets up the handler for the drop down menus
-// Semester drop down
-d3.select('#semester')
-  .on('change', function() {
-    console.log(d3.select(this).node().value);
+function update() {
+  d3.select('#diningin')
+	.on('change', function() { dineIn = d3.select(this).node().checked);});
+  d3.select('#togo')
+	.on('change', function() { dineIn = d3.select(this).node().checked);});
+  d3.select('#day')
+	.on('change', function() { 
+		wkDaySelected = [false, false, false, false, false, false, false];
+		wkDaySelected[d3.select(this).node().value-1] = true;
+  d3.select('#week')
+		wkSelected = Array(15).fill(false);
+		wkSelected[d3.select(this).node().value-1] = true;
+		
   });
-
-	
-// Week drop down
-d3.select('#week')
-  .on('change', function() {
-    console.log(d3.select(this).node().value);
-  });
-
-// Day of week drop down
-d3.select('#day')
-  .on('change', function() {
-    console.log(d3.select(this).node().value);
-  });
+}
 
 // Loading csv data using d3
 d3.queue()
