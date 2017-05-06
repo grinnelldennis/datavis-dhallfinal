@@ -6,10 +6,10 @@ var weekSelector = 0;
 var wkDaySelected = [true, true, true, true, true, true, true];
 var semSelector = 0;
 var semester = [["06/01/2014", "06/01/2016"],
-        ["06/01/2014", "01/01/2015"],
-        ["01/01/2015", "06/01/2015"],
-        ["06/01/2015", "01/01/2016"],
-        ["01/01/2016", "06/01/2016"]];
+          ["06/01/2014", "01/01/2015"],
+          ["01/01/2015", "06/01/2015"],
+          ["06/01/2015", "01/01/2016"],
+          ["01/01/2016", "06/01/2016"]];
 
 
 //------------------------------------------------------------------------
@@ -164,7 +164,7 @@ function populateWeekArray (a, d1, d3) {
     day.AvgOut = day.DineOut / day.Count;
     max = (day.AvgIn+day.AvgOut > max)? day.AvgIn+day.AvgOut : max;
   }
-  // weeklyData[8] stores maximum 
+  // weeklyData[7] stores maximum 
   weeklyData.push({Max: max});
 }
 
@@ -210,27 +210,36 @@ function getArrayIndex (d) {
 
 function displayLineChart() {
 
-  var line_x = d3.scaleLinear().domain([0, 52]).range([0 + margin, svg_width - margin]);
-  var line_y = d3.scaleLinear().domain([0, d3.max(dailyData)]).range([0 + margin, svg_height - margin]);
+  var canvas = document.querySelector("canvas"),
+    context = canvas.getContext("2d");
 
-  var svg_line = d3.select("body")
-    .append("svg:svg")
-    .attr("width", svg_width)
-    .attr("height", svg_height)
- 
-  var graph = svg_line.append("graph")
-    .attr("transform", "translate(0, 0)");
+  var x = d3.scaleLinear().domain([0, 52]).range([0 + margin, svg_width - margin]);
+  var y = d3.scaleLinear().domain([0, d3.max(dailyData)]).range([0 + margin, svg_height - margin]);
+
 
   var line = d3.line()
-    .x(function(d) {return d.Time;})
-    .y(function(d) {return d.AvgIn;});
-  
-  graph.append("svg:path").attr("d", line(dailyData));
+    .x(function(d) { return x(d.Time); })
+    .y(function(d) { return y(d.AvgIn); })
+    .curve(d3.curveStep)
+    .context(context);
 
-  var xaxis = d3.axisBottom(line_x);
-  var yaxis = d3.axisLeft(line_y);
+  x.domain(d3.extent(dailyData, function(d) { return d.Time; }));
+  y.domain(d3.extent(dailyData, function(d) { return d.AvgIn; }));
+
+
+  context.beginPath();
+  line(dailyData);
+  context.lineWidth = 1.5;
+  context.strokeStyle = "steelblue";
+  context.stroke();
+
+
+  var xaxis = d3.axisBottom(x);
+  var yaxis = d3.axisLeft(y);
 
 }
+
+
 
 
 //------------------------------------------------------------------------
@@ -354,7 +363,6 @@ function displayStackedBar() {
   svg.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
       .call(xaxis);
-
 
   svg.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
