@@ -285,7 +285,7 @@ function displayLineChartSvg() {
       .attr('class', 'x-axis')
       .attr('x', plot_width / 2)
       .attr('y', 2 * margin + plot_height + label_height)
-      .text('Days of the Week');
+      .text('Time During Day');
 
   // Add the rotated y-axis title
   svg_day.append('text')
