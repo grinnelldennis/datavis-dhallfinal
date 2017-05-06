@@ -49,7 +49,7 @@ d3.select('#week')
     console.log(d3.select(this).node().value);
     weekSelector = d3.select(this).node().value;
     updateStack();
-	  //updateLine();
+	  updateLine();
   });
 
 // Day of week drop down
@@ -79,7 +79,7 @@ function updateStack() {
 
 function updateLine() {
   populateDayArray(trafficByFifteen, getDate(0),  getDate(1));
-  displayLineChart();
+  displayLineChartSvg();
 }
 
 
@@ -210,34 +210,109 @@ function getArrayIndex (d) {
 //------------------------------------------------------------------------
 //---SVG Drawing, Line 
 
-function displayLineChart() {
+function displayLineChartSvg() {
 
-  var canvas = document.querySelector("canvas"),
-    context = canvas.getContext("2d");
+  // Set-up for stacked bar chart
+  var stack = d3.stack()
+    .keys(['AvgIn', 'AvgOut']);
 
-  var x = d3.scaleLinear().domain([0, 52]).range([0 + margin, svg_width - margin]);
-  var y = d3.scaleLinear().domain([0, d3.max(dailyData)]).range([0 + margin, svg_height - margin]);
+  // Manipulate data array to be able to create stacked bar chart
+  var stackedArr = stack(dailyData);
+
+  // Set-up scales for stacked bar chart
+  var xScale = d3.scaleBand()
+    .domain(d3.range(dailyData.length-1))
+    .range([0, plot_width], 0.05);
+
+  var yScale = d3.scaleLinear()
+    .domain([0, dailyData[52].Max])
+    .range([plot_height, 0]);
+
+  // Create easy colors accessible from the 10-step ordinal scale
+  var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+  // Create SVG for stacked bar chart
+  var svg_day = d3.select('body')
+    .append('svg')
+    .attr('width', svg_width)
+    .attr('height', svg_height);
+
+  // Add a group for each row of data
+  var groups = svg_day.selectAll('h')
+    .data(stackedArr)
+    .enter()
+    .append('g')
+    .style('fill', function(d, i) {
+      return colors(i);
+    });
+
+  // Add a rect for each data value
+  var rects = groups.selectAll('rect.d')
+    .data(function(d) { return d; })
+    .enter()
+    .append('rect')
+    .attr('x', function(d, i) {
+      return xScale(i) + 2 * margin;
+    })
+    .attr('y', function(d) {
+      return yScale(d[1]) + margin;
+    })
+    .attr('height', function(d) {
+      return yScale(d[0]) - yScale(d[1]);  
+    })
+    .attr('width', xScale.bandwidth() - 5);
 
 
-  var line = d3.line()
-    .x(function(d) { return x(d.Time); })
-    .y(function(d) { return y(d.AvgIn); })
-    .curve(d3.curveStep)
-    .context(context);
+  // Generate our x-axis labels. Here we are searching for text tags with the
+  // class x-axis. This allows us to distinguish x-axis labels from other text.
+  svg_day.selectAll('text.x-axis.d')
+    .data(dailyData)
+    .enter()
+    .append('text')
+      .attr('class', 'x-axis')
+      .attr('x', function(d, i) {
+        // The middle of the label is just half a bar's width to the right of the bar
+        return xScale(i) + margin*2.15;
+      })
+      .attr('y', margin + plot_height + label_spacing + label_height)
+          .attr('text-anchor', 'middle')
+      .text(function(d, i) { 
+        if (i % 4== 0) 
+          return d.Time +"0"; });
 
-  x.domain(d3.extent(dailyData, function(d) { return d.Time; }));
-  y.domain(d3.extent(dailyData, function(d) { return d.AvgIn; }));
+  // x-axis title
+  svg_day.append('text')
+      .attr('class', 'x-axis')
+      .attr('x', plot_width / 2)
+      .attr('y', 2 * margin + plot_height + label_height)
+      .text('Days of the Week');
+
+  // Add the rotated y-axis title
+  svg_day.append('text')
+    .attr('class', 'y-axis')
+    .attr('text-anchor', 'middle')
+    .attr('transform',
+      // Translate and rotate the label into place. This rotates the label
+        // around 0,0 in its original position, so the label rotates around its
+        // center point
+        'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
+        'rotate(-90)')
+    .text('Number of Swipes');
+
+  // Create x-axis and y-axis
+  var xaxis = d3.axisBottom(xScale);
+  var yaxis = d3.axisLeft(yScale);
 
 
-  context.beginPath();
-  line(dailyData);
-  context.lineWidth = 1.5;
-  context.strokeStyle = "steelblue";
-  context.stroke();
+  svg_day.append('g')
+      .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
+      .call(xaxis);
+
+  svg_day.append('g')
+      .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
+      .call(yaxis);
 
 
-  var xaxis = d3.axisBottom(x);
-  var yaxis = d3.axisLeft(y);
 
 }
 
