@@ -3,7 +3,7 @@
 var diningin = false;
 var togo = false;
 var weekSelector = 0;
-var daySelector = 0;
+var wkDaySelected = [true, true, true, true, true, true, true];
 var semSelector = 0;
 var semester = [["06/01/2014", "06/01/2016"],
         ["06/01/2014", "01/01/2015"],
@@ -13,7 +13,7 @@ var semester = [["06/01/2014", "06/01/2016"],
 
 
 //------------------------------------------------------------------------
-//---Check Boxes Handlers 
+//---Check Boxes Handlers  (Thomas Pitcher)
 
 // #Dining-in checkboxes
 d3.select('#diningin')
@@ -56,7 +56,7 @@ d3.select('#week')
 d3.select('#day')
   .on('change', function() {
     console.log(d3.select(this).node().value);
-    daySelector = d3.select(this).node().value;
+    var daySelector = d3.select(this).node().value;
     wkDaySelected = [false, false, false, false, false, false, false];
     if (daySelector == 0) {
 		  wkDaySelected = [true, true, true, true, true, true, true];
@@ -67,7 +67,7 @@ d3.select('#day')
 
 
 //------------------------------------------------------------------------
-//---Update Views
+//---Update Views (Thomas & Dennis)
 
 // Helper that returns a Date object corresponding to correct semester date range
 function getDate(i) { return new Date(semester[semSelector][i]); }
@@ -83,7 +83,7 @@ function updateLine() {
 
 
 //------------------------------------------------------------------------
-//---CSV Loading
+//---CSV Loading  (Dennis)
 
 // Loading csv data using d3
 d3.queue()
@@ -134,6 +134,10 @@ function processCsvData (data) {
   }
 }
 
+
+//------------------------------------------------------------------------
+//---Array Filtering (Dennis)
+
 // Data Array for Week Stack Plot
 var weeklyData = [];
 function populateWeekArray (a, d1, d3) {
@@ -157,20 +161,13 @@ function populateWeekArray (a, d1, d3) {
   for (var day of weeklyData) {
     day.AvgIn = day.DineIn / day.Count;
     day.AvgOut = day.DineOut / day.Count;
-    max = (day.AvgIn > max)? day.AvgIn : max;
+    max = (day.AvgIn+day.AvgOut > max)? day.AvgIn+day.AvgOut : max;
   }
   // weeklyData[8] stores maximum 
   weeklyData.push({Max: max});
 }
 
-//---Filtering 
-// Filtering Conditions, update on handler click
-var wkDaySelected = [true, true, true, true, true, true, true];
-//dateData.filter(function(d) {return wkDaySelected[+d.Day];})
-var dineIn = true;
-var dineOut = true;
-
-// Data Array for Day Line plot_height
+// Data Array for Day Line 
 var dailyData = [];
 function populateDayArray (a, d1, d3) {
   dailyData = new Array;
@@ -193,7 +190,7 @@ function populateDayArray (a, d1, d3) {
   for (var fifteen of dailyData) {
     fifteen.AvgIn = fifteen.DineIn / fifteen.Count;
     fifteen.AvgOut = fifteen.DineOut / fifteen.Count;
-    max = (fifteen.AvgIn > max)? fifteen.AvgIn : max;
+    max = (fifteen.AvgIn+fifteen.AvgOut > max)? fifteen.AvgIn+fifteen.AvgOut : max;
   }
   // dailyData[52] stores maximum within data
   dailyData.push({Max: max});
@@ -206,8 +203,7 @@ function getArrayIndex (d) {
 
 
 //------------------------------------------------------------------------
-//---SVG Drawing
-
+//---SVG Drawing (Ben)
 
 // Set up the width and height of the entire SVG
 var svg_width = 800;
