@@ -49,7 +49,7 @@ d3.select('#week')
     console.log(d3.select(this).node().value);
     weekSelector = d3.select(this).node().value;
     updateStack();
-	  updateLine();
+	  //updateLine();
   });
 
 // Day of week drop down
@@ -74,7 +74,6 @@ function getDate(i) { return new Date(semester[semSelector][i]); }
 
 function updateStack() {
   populateWeekArray(trafficByDay, getDate(0),  getDate(1));
- 
   displayStackedBar();
 }
 
@@ -143,6 +142,7 @@ function processCsvData (data) {
 // Data Array for Week Stack Plot
 var weeklyData = [];
 function populateWeekArray (a, d1, d3) {
+  console.log("d1, "+ d1 +" ;d2, "+ d3 +" ;wk, "+ weekSelector +" ;sem, "+semSelector);
   weeklyData = new Array;
   var max = 0;
   // initializes empty array
@@ -150,13 +150,14 @@ function populateWeekArray (a, d1, d3) {
     weeklyData.push({Day: i, DineIn: 0, DineOut: 0, Count: 0, AvgOut: 0, AvgIn: 0}); 
   // filter data 
   if (weekSelector != 0) 
-    a = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector; });
+    a = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
   for (var row of a) { 
     if (+row.DineIn != 0) {
       weeklyData[+row.Day].DineIn += +row.DineIn; 
       weeklyData[+row.Day].DineOut += +row.DineOut; 
       weeklyData[+row.Day].Count++;
+      if (+row.Day == 6) {console.log(row);}
     } 
   }
   // finds maximum
