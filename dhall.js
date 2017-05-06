@@ -74,6 +74,7 @@ function getDate(i) { return new Date(semester[semSelector][i]); }
 
 function updateStack() {
   populateWeekArray(trafficByDay, getDate(0),  getDate(1));
+ 
   displayStackedBar();
 }
 
@@ -256,7 +257,7 @@ var plot_height = svg_height - 5/2 * margin;
 
 // Sizing and spacing for plot components
 var label_height = 12 // Does not change font size, just an estimate
-var label_spacing = 8;
+var label_spacing = 16;
 
 // Build an array of days of week
 var daysOfWeek = [
@@ -270,6 +271,7 @@ var daysOfWeek = [
 ];
 
 function displayStackedBar() {
+	
   // Set-up for stacked bar chart
   var stack = d3.stack()
     .keys(['AvgIn', 'AvgOut']);
