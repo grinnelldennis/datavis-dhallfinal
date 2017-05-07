@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------
 // Global filtering options
-var diningin = false;
-var togo = false;
+var dnin = true;
+var togo = true;
 var weekSelector = 0;
 var wkDaySelected = [true, true, true, true, true, true, true];
 var semSelector = 0;
@@ -31,6 +31,7 @@ d3.select('#togo')
 	togo = d3.select(this).node().checked;
 	updateStack();
 	updateLine();
+  updateSemester();
 	});
 
 //---Drop-Down Handlers
@@ -65,6 +66,7 @@ d3.select('#day')
     }	else { wkDaySelected[daySelector] = true; }
     updateStack();
   	updateLine();
+    updateSemester();
 });
 
 
@@ -219,7 +221,8 @@ function populateSemesterArray(a, d1, d3) {
   semesterData = new Array;
   semesterData = a.filter(function (d) { return +d1 <= +d.Date && +d.Date <= +d3; })
   if (weekSelector != 0) 
-    semesterData = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
+    semesterData = semesterData.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
+  semesterData = semesterData.filter(function(d) {return wkDaySelected[+d.Day];})
 }
 
 
@@ -260,12 +263,12 @@ function displaySemseterLineGraph() {
   var line_in = d3.line()
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
     .y(function(d) { return yScale(d.DineIn)+margin; })
-    .curve(d3.curveBasis);
+    .curve(d3.curveLinear);
 
   var line_out = d3.line()
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
     .y(function(d) { return yScale(d.DineOut)+margin; })
-    .curve(d3.curveBasis);
+    .curve(d3.curveLinear);
 
   // x-axis title
   svg_day.append('text')
@@ -279,9 +282,6 @@ function displaySemseterLineGraph() {
     .attr('class', 'y-axis')
     .attr('text-anchor', 'middle')
     .attr('transform',
-      // Translate and rotate the label into place. This rotates the label
-        // around 0,0 in its original position, so the label rotates around its
-        // center point
         'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
         'rotate(-90)')
     .text('Number of Swipes');
@@ -299,6 +299,7 @@ function displaySemseterLineGraph() {
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 
+  if (dnin)
   svg_day.append("path")
       .datum(semesterData)
       .attr("fill", "none")
@@ -308,6 +309,7 @@ function displaySemseterLineGraph() {
       .attr("stroke-width", 1.5)
       .attr("d", line_in);
 
+  if (togo)
   svg_day.append("path")
       .datum(semesterData)
       .attr("fill", "none")
@@ -452,8 +454,8 @@ var daysOfWeek = [
     'Saturday'
 ];
 
+
 function displayStackedBar() {
-	
   // Set-up for stacked bar chart
   var stack = d3.stack()
     .keys(['AvgIn', 'AvgOut']);
