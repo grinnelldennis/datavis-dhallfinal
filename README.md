@@ -1,43 +1,30 @@
 # datavis-dhallfinal
 
 
-Notes on the Project
-
-    1 line chart on 
-        Time versus swipes
-        Default: 
-        Options:
-
-    1 bar chart on
-        Days of the week versus swipes 
-        Default:
-        Options:
-
-    Maybe over the semster
+### Notes on the Project
 
 
+#### TODOS 
+
+1. Add transitions on both bar charts
+2. Fix duplicate labelings
+3. Fix daily bar chart not updating on change
+4. Add hover-over information
+5. Rearrange landing page 
+6. `d3.remove` elements on `updateView`
+
+#### Potential Features 
+
+1. Potentially a zoom chart, see https://bl.ocks.org/mbostock/431a331294d2b5ddd33f947cf4c81319
+2. Potentially a pie chart showing proportions 
 
 
+#### Bugs
+
+- Timed0 prepending horizontal axis label for daily-bar chart
 
 
+### Screenshot 
 
-
-Notes from/for Dennis
-
-
-    Class Schedule for 2014-2016
-        NSO     Class   FallBk  Class   Thkgv   Class   WntBk
-	   2014-2015
-        AUG22   AUG28   OCT18   OCT27   NOV27   DEC1    DEC12
-        -2                        
-        2015-2016
-        AUG21   AUG27   OCT17   OCT26   NOV26   NOV30   DEC11  
-        -2
-
-
-    Formatter.java takes following commandline arguements 
-    (0) relative or full input file path
-    (1) relative or full output file path
-    (2) 
-
+![alt text](https://github.com/grinnelldennis/datavis-dhallfinal/dhall.png "Preview 1")
 
