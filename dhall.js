@@ -246,21 +246,24 @@ function displayLineChartSvg() {
     });
 
   // Add a rect for each data value
-  var rects = groups.selectAll('rect.d')
-    .data(function(d) { return d; })
-    .enter()
-    .append('rect')
-    .attr('x', function(d, i) {
-      return xScale(i) + 2 * margin;
+  var line_in = d3.line()
+    .x(function(d, i) {
+      return xScale(i) + margin*2;
     })
-    .attr('y', function(d) {
-      return yScale(d[1]) + margin;
+    .y(function(d) {
+      return yScale(d.AvgIn + d.AvgOut)+margin;
     })
-    .attr('height', function(d) {
-      return yScale(d[0]) - yScale(d[1]);  
-    })
-    .attr('width', xScale.bandwidth() - 5);
+    .curve(d3.curveBasis);
 
+      var line_out = d3.line()
+    .x(function(d, i) {
+      return xScale(i) + margin*2;
+    })
+    .y(function(d) {
+      console.log(d.AvgIn);
+      return yScale(d.AvgOut)+margin;
+    })
+    .curve(d3.curveBasis);
 
   // Generate our x-axis labels. Here we are searching for text tags with the
   // class x-axis. This allows us to distinguish x-axis labels from other text.
@@ -311,7 +314,23 @@ function displayLineChartSvg() {
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 
+  svg_day.append("path")
+      .datum(dailyData)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_in);
 
+  svg_day.append("path")
+      .datum(dailyData)
+      .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_out);
 
 }
 
