@@ -130,7 +130,7 @@ function processCsvData (data) {
       d.setUTCHours(hour);
       d.setUTCMinutes(+t.substring(j+1, j+3));
       // populates row into object
-      trafficByFifteen.push({ Date: d, DineIn: row.DineIn,  DineOut: row.DineOut });
+      trafficByFifteen.push({ Date: d, DineIn: row.DineIn,  DineOut: row.DineOut, Week: row.Week });
     }
   }
 }
@@ -157,7 +157,6 @@ function populateWeekArray (a, d1, d3) {
       weeklyData[+row.Day].DineIn += +row.DineIn; 
       weeklyData[+row.Day].DineOut += +row.DineOut; 
       weeklyData[+row.Day].Count++;
-      if (+row.Day == 6) {console.log(row);}
     } 
   }
   // finds maximum
@@ -179,11 +178,11 @@ function populateDayArray (a, d1, d3) {
     dailyData.push({ Time: (Math.floor(i/4)+7) + ":" + ((i%4)*15),
                   DineIn: 0, DineOut: 0, Count: 0, AvgIn: 0, AvgOut: 0}); }
   // filter option
-  console.log(a.length);
+  if (weekSelector != 0) 
+    a = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
-  console.log(a.length);
+
   //a = a.filter(function(d) {return wkDaySelected[+d.Day];})
-  console.log(a.length);
   for (var row of a) {
     var index = getArrayIndex(row.Date);
     if (0 <= index && index < 52){
