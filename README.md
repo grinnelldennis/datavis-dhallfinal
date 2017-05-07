@@ -7,8 +7,10 @@
 #### TODOS 
 
 - Add transitions on both bar charts
-- Fix duplicate labelings
+- Add Seperation between graphs
 - Add hover-over information
+- Enhance axis labels
+- Fix duplicate labelings
 - Rearrange landing page 
 - `d3.remove` elements on `updateView`
 
