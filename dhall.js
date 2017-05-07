@@ -6,9 +6,9 @@ var weekSelector = 0;
 var wkDaySelected = [true, true, true, true, true, true, true];
 var semSelector = 0;
 var semester = [["08/01/2014", "06/01/2016"],
-          ["08/01/2014", "12/20/2015"],
+          ["08/01/2014", "12/20/2014"],
           ["01/15/2015", "06/01/2015"],
-          ["08/01/2015", "12/20/2016"],
+          ["08/01/2015", "12/20/2015"],
           ["01/15/2016", "06/01/2016"]];
 
 
@@ -208,11 +208,11 @@ function getArrayIndex (d) {
   return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
 }
 
+// Semester, Day-by-Day array 
 var semesterData = [];
-var semesterMax = 0;
 function populateSemesterArray(a, d1, d3) {
   semesterData = new Array;
-  semesterData = a.filter(function (d) {return +d1 <= +d.Date && +d.Date <= +d3;})
+  semesterData = a.filter(function (d) { return +d1 <= +d.Date && +d.Date <= +d3; })
   if (weekSelector != 0) 
     semesterData = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
 }
@@ -292,7 +292,7 @@ function displaySemseterLineGraph() {
   var width_semeseter = plot_width*2;
   // Set-up scales for stacked bar chart
   var xScale = d3.scaleTime()
-    .domain([getDate(0), getDate(1)])
+    .domain([semesterData[0].Date, semesterData[semesterData.length-1].Date])
     .range([0, width_semeseter], 0.05);
 
   var yScale = d3.scaleLinear()
