@@ -5,11 +5,11 @@ var togo = false;
 var weekSelector = 0;
 var wkDaySelected = [true, true, true, true, true, true, true];
 var semSelector = 0;
-var semester = [["06/01/2014", "06/01/2016"],
-          ["06/01/2014", "01/01/2015"],
-          ["01/01/2015", "06/01/2015"],
-          ["06/01/2015", "01/01/2016"],
-          ["01/01/2016", "06/01/2016"]];
+var semester = [["08/01/2014", "06/01/2016"],
+          ["08/01/2014", "12/20/2015"],
+          ["01/15/2015", "06/01/2015"],
+          ["08/01/2015", "12/20/2016"],
+          ["01/15/2016", "06/01/2016"]];
 
 
 //------------------------------------------------------------------------
@@ -41,6 +41,7 @@ d3.select('#semester')
     semSelector = d3.select(this).node().value;
     updateStack();
     updateLine();
+    updateSemester();
   });
 	
 // Week drop down
@@ -50,6 +51,7 @@ d3.select('#week')
     weekSelector = d3.select(this).node().value;
     updateStack();
 	  updateLine();
+    updateSemester();
   });
 
 // Day of week drop down
@@ -82,6 +84,10 @@ function updateLine() {
   displayLineChartSvg();
 }
 
+function updateSemester() {
+  populateSemesterArray(trafficByDay, getDate(0),  getDate(1));
+  displaySemseterLineGraph();
+}
 
 //------------------------------------------------------------------------
 //---CSV Loading  (Dennis)
@@ -95,14 +101,14 @@ d3.queue()
   .await(function(error, f2014, f2015, s2015, s2016) {
     // data processing
     processCsvData(f2014);
-    processCsvData(f2015);
     processCsvData(s2015);
+    processCsvData(f2015);
     processCsvData(s2016);
 
     // display default graphs
     updateStack();
     updateLine();
-    displayEverdayDayZoom();
+    updateSemester();
 })
 
 // Array Objects Holding Aggregated Data
@@ -202,6 +208,15 @@ function getArrayIndex (d) {
   return (d.getUTCHours()-7)*4 + (d.getUTCMinutes()-1)/15;
 }
 
+var semesterData = [];
+var semesterMax = 0;
+function populateSemesterArray(a, d1, d3) {
+  semesterData = new Array;
+  semesterData = a.filter(function (d) {return +d1 <= +d.Date && +d.Date <= +d3;})
+  if (weekSelector != 0) 
+    semesterData = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
+}
+
 
 //------------------------------------------------------------------------
 //---Zoom Chart over Day Array
@@ -264,14 +279,105 @@ function displayEverdayDayZoom() {
       .call(zoom.transform, d3.zoomIdentity
           .scale(plot_width / (x(d1) - x(d0)))
           .translate(-x(d0), 0));
+
+  function zoomed(x) {
+    var t = d3.event.transform, xt = t.rescaleX(x);
+    g.select(".area").attr("d", area.x(function(d) { return xt(d.Date); }));
+    g.select(".axis--x").call(xAxis.scale(xt));
+  }
 }
 
-function zoomed(x) {
-  var t = d3.event.transform, xt = t.rescaleX(x);
-  g.select(".area").attr("d", area.x(function(d) { return xt(d.Date); }));
-  g.select(".axis--x").call(xAxis.scale(xt));
-}
 
+function displaySemseterLineGraph() {
+  var width_semeseter = plot_width*2;
+  // Set-up scales for stacked bar chart
+  var xScale = d3.scaleTime()
+    .domain([getDate(0), getDate(1)])
+    .range([0, width_semeseter], 0.05);
+
+  var yScale = d3.scaleLinear()
+    .domain([0, 3000])
+    .range([plot_height, 0]);
+
+  // Create easy colors accessible from the 10-step ordinal scale
+  var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+  // Create SVG for stacked bar chart
+  var svg_day = d3.select('body')
+    .append('svg')
+    .attr('width', svg_width*2)
+    .attr('height', svg_height);
+
+  // Add a group for each row of data
+  var groups = svg_day.selectAll('h')
+    .data(semesterData)
+    .enter()
+    .append('g')
+    .style('fill', function(d, i) {
+      return colors(i);
+    });
+
+  // Add a rect for each data value
+  var line_in = d3.line()
+    .x(function(d, i) { return xScale(d.Date)+margin*2; })
+    .y(function(d) { return yScale(d.DineIn)+margin; })
+    .curve(d3.curveBasis);
+
+  var line_out = d3.line()
+    .x(function(d, i) { return xScale(d.Date)+margin*2; })
+    .y(function(d) { return yScale(d.DineOut)+margin; })
+    .curve(d3.curveBasis);
+
+  // x-axis title
+  svg_day.append('text')
+      .attr('class', 'x-axis')
+      .attr('x', plot_width)
+      .attr('y', 2 * margin + plot_height + label_height)
+      .text('Time During Day');
+
+  // Add the rotated y-axis title
+  svg_day.append('text')
+    .attr('class', 'y-axis')
+    .attr('text-anchor', 'middle')
+    .attr('transform',
+      // Translate and rotate the label into place. This rotates the label
+        // around 0,0 in its original position, so the label rotates around its
+        // center point
+        'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
+        'rotate(-90)')
+    .text('Number of Swipes');
+
+  // Create x-axis and y-axis
+  var xaxis = d3.axisBottom(xScale);
+  var yaxis = d3.axisLeft(yScale);
+
+
+  svg_day.append('g')
+      .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
+      .call(xaxis);
+
+  svg_day.append('g')
+      .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
+      .call(yaxis);
+
+  svg_day.append("path")
+      .datum(semesterData)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_in);
+
+  svg_day.append("path")
+      .datum(semesterData)
+      .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_out);
+}
 
 //------------------------------------------------------------------------
 //---SVG Drawing, Line 
