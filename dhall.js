@@ -618,36 +618,3 @@ function displayStackedBar() {
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 }
-
-/*
-// Line Graph dining hall traffic over time
-var svg_height_2 = 800;
-var svg_width_2 = 800;
-var margin_2 = 100;
-var plot_width_2 = svg_width - 2 * margin;
-var plot_height_2 = svg_height - 2 * margin;
-// Create SVG for line plot
-var svg_2 = d3.select('body').append('svg')
-.attr('width', svg_width_2)
-.attr('height', svg_height);
-// x-axis label
-svg_2.append('text')
-  .attr('class', 'x-axis')
-  .attr('x', margin + plot_width / 2)
-  .atter('y', 3/2 * margin + plot_height)
-  .text('Time');
-// y-axis label
-svg_2.append('text')
-    .attr('class', 'y-axis')
-    .attr('text-anchor', 'middle')
-    .attr('transform',
-        'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' +
-        'rotate(-90)')
-    .text('Number of Swipes');
-populateDayArray(trafficByFifteen, new Date("04/06/1997"), new Date("04/08/2019"));
-var max_avgin_listing = d3.max(dayData.AvgIn);
-var max_avgout_listing = d3.max(dayData.AvgOut);
-var xscale = d3.scaleTime().range([0, width])
-var yscale = d3.scaleLinear().
-}
-*/
