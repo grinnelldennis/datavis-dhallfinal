@@ -6,16 +6,17 @@
 
 #### TODOS 
 
-1. Add transitions on both bar charts
-2. Fix duplicate labelings
-3. Fix daily bar chart not updating on change
-4. Add hover-over information
-5. Rearrange landing page 
-6. `d3.remove` elements on `updateView`
+- Add transitions on both bar charts
+- Fix duplicate labelings
+- Add hover-over information
+- Rearrange landing page 
+- `d3.remove` elements on `updateView`
+
+- ~~Fix daily bar chart not updating on change~~
 
 #### Potential Features 
 
-1. Potentially a zoom chart, see https://bl.ocks.org/mbostock/431a331294d2b5ddd33f947cf4c81319
+1. [WIP, `dennis/zoomable-svg`] Potentially a zoom chart, see https://bl.ocks.org/mbostock/431a331294d2b5ddd33f947cf4c81319
 2. Potentially a pie chart showing proportions 
 
 
@@ -26,5 +27,5 @@
 
 ### Screenshot 
 
-![alt text](https://github.com/grinnelldennis/datavis-dhallfinal/dhall.png "Preview 1")
+![Preview](https://github.com/grinnelldennis/datavis-dhallfinal/blob/master/preview.png?raw=true "Preview 1")
 
