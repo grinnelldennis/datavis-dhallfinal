@@ -230,6 +230,8 @@ function populateDayArray (a, d1, d3) {
   for (var fifteen of dailyData) {
     fifteen.AvgIn = fifteen.DineIn / fifteen.Count;
     fifteen.AvgOut = fifteen.DineOut / fifteen.Count;
+    if (fifteen.AvgIn == NaN) fifteen.AvgIn = 0;
+    if (fifteen.AvgOut == NaN) fifteen.AvgOut = 0;
     max = (fifteen.AvgIn+fifteen.AvgOut > max)? fifteen.AvgIn+fifteen.AvgOut : max;
   }
   // dailyData[52] stores maximum within data

@@ -1,30 +1,25 @@
 # datavis-dhallfinal
 
 
-### Notes on the Project
+### Updates
+
+- Added transition effects on all three charts
+- Fixed duplicate labelings
+- Fixed daily bar chart not updating on change
+- Enhanced axis labels
 
 
-#### TODOS 
+#### Deferred TODOS 
 
-- Add transitions on both bar charts
 - Add Seperation between graphs
 - Add hover-over information
-- Enhance axis labels
-- Fix duplicate labelings
 - Rearrange landing page 
-- `d3.remove` elements on `updateView`
 
-- ~~Fix daily bar chart not updating on change~~
 
 #### Potential Features 
 
 1. [WIP, `dennis/zoomable-svg`] Potentially a zoom chart, see https://bl.ocks.org/mbostock/431a331294d2b5ddd33f947cf4c81319
 2. Potentially a pie chart showing proportions 
-
-
-#### Bugs
-
-- Timed0 prepending horizontal axis label for daily-bar chart
 
 
 ### Screenshot 
