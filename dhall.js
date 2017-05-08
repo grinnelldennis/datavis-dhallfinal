@@ -76,8 +76,6 @@ d3.select('#day')
 // Helper that returns a Date object corresponding to correct semester date range
 function getDate(i) { return new Date(semester[semSelector][i]); }
 
-function 
-
 function updateStack() {
   populateWeekArray(trafficByDay, getDate(0),  getDate(1));
   displayStackedBar();
@@ -85,7 +83,7 @@ function updateStack() {
 
 function updateLine() {
   populateDayArray(trafficByFifteen, getDate(0),  getDate(1));
-  displayLineChartSvg();
+  displayTimeOfDayStacked();
 }
 
 function updateSemester() {
@@ -191,7 +189,7 @@ function populateDayArray (a, d1, d3) {
 
   if (weekSelector != 0) 
     a = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
-    a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
+  a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
 
 
   //a = a.filter(function(d) {return wkDaySelected[+d.Day];})
@@ -240,7 +238,7 @@ function displaySemseterLineGraph() {
     .range([0, width_semeseter], 0.05);
 
   var yScale = d3.scaleLinear()
-    .domain([0, 3000])
+    .domain([0, 3200])
     .range([plot_height, 0]);
 
   // Create easy colors accessible from the 10-step ordinal scale
@@ -263,14 +261,15 @@ function displaySemseterLineGraph() {
 
   // Add a rect for each data value
   var line_in = d3.line()
+    .defined(function(d) {return d;})
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
     .y(function(d) { return yScale(d.DineIn)+margin; })
-    .curve(d3.curveCardinal.tension(.5));
+    .curve(d3.curveMonotoneX);
 
   var line_out = d3.line()
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
     .y(function(d) { return yScale(d.DineOut)+margin; })
-    .curve(d3.curveLinear);
+    .curve(d3.curveMonotoneX);
 
   // x-axis title
   svg_day.append('text')
@@ -320,12 +319,13 @@ function displaySemseterLineGraph() {
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
       .attr("d", line_out);
+      
 }
 
 //------------------------------------------------------------------------
 //---SVG Drawing, Line 
 
-function displayLineChartSvg() {
+function displayTimeOfDayStacked() {
 
   // Set-up for stacked bar chart
   var stack = d3.stack()
@@ -367,7 +367,7 @@ function displayLineChartSvg() {
     .enter()
     .append('rect')
     .attr('x', function(d, i) {
-      return xScale(i) + 2 * margin;
+      return xScale(i) + 2 * margin-5;
     })
     .attr('y', function(d) {
       return yScale(d[1]) + margin;
@@ -376,7 +376,6 @@ function displayLineChartSvg() {
       return yScale(d[0]) - yScale(d[1]);  
     })
     .attr('width', xScale.bandwidth() - 5);
-
 
   // Generate our x-axis labels. Here we are searching for text tags with the
   // class x-axis. This allows us to distinguish x-axis labels from other text.
@@ -407,9 +406,6 @@ function displayLineChartSvg() {
     .attr('class', 'y-axis')
     .attr('text-anchor', 'middle')
     .attr('transform',
-      // Translate and rotate the label into place. This rotates the label
-        // around 0,0 in its original position, so the label rotates around its
-        // center point
         'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
         'rotate(-90)')
     .text('Number of Swipes');
@@ -418,7 +414,6 @@ function displayLineChartSvg() {
   var xaxis = d3.axisBottom(xScale).tickValues([]);
   var yaxis = d3.axisLeft(yScale);
 
-
   svg_day.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
       .call(xaxis);
@@ -426,6 +421,23 @@ function displayLineChartSvg() {
   svg_day.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
+
+  // normalized lines
+  var line_normalized = d3.line()
+    .defined(function(d) {return d;})
+    .x(function(d, i) { return xScale(i)+margin*2; })
+    .y(function(d) { return yScale(d.DineOut/d.DineIn*dailyData[52].Max)+margin; })
+    .curve(d3.curveMonotoneX);
+
+  svg_day.append("path")
+      .datum(dailyData)
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_normalized);
+
 }
 
 
@@ -507,6 +519,7 @@ function displayStackedBar() {
       return yScale(d[0]) - yScale(d[1]);  
     })
     .attr('width', xScale.bandwidth() - 5);
+
 
   // Generate our x-axis labels. Here we are searching for text tags with the
   // class x-axis. This allows us to distinguish x-axis labels from other text.

@@ -6732,7 +6732,11 @@ Week,Day,Date,TimeIn,Dash,TimeOut,DineOut,DineIn,
 16,6,05/30/15,2:31PM,-,2:45PM,0,0,
 16,6,05/30/15,2:46PM,-,3:00PM,0,0,
 <<<<<<< HEAD
+<<<<<<< HEAD
 16,6,05/30/15,0,DayTotals:,0,0,0,0
 =======
 16,6,05/30/15,0,DayTotals:,0,0,0,0
 >>>>>>> 4b2223d810d9117ac123c3af5549740780eb953f
+=======
+16,6,05/30/15,0,DayTotals:,0,0,0,0
+>>>>>>> 4e5c2dc8d33e16767569ae09dee8d65ec5cc47ff
