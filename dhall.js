@@ -301,6 +301,7 @@ function displaySemseterLineGraph() {
       .attr('class', 'x-axis')
       .attr('x', plot_width)
       .attr('y', 2 * margin + plot_height + label_height)
+      .attr('font-weight', 'bold')
       .text('Time');
 
   // Add the rotated y-axis title
@@ -308,8 +309,9 @@ function displaySemseterLineGraph() {
     .attr('class', 'y-axis')
     .attr('text-anchor', 'middle')
     .attr('transform',
-        'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
+        'translate(' + margin/1.75 + ', ' + (plot_height / 2 + margin) + ')' + 
         'rotate(-90)')
+    .attr('font-weight', 'bold')
     .text('Number of Swipes');
 
   // Create x-axis and y-axis
@@ -324,7 +326,6 @@ function displaySemseterLineGraph() {
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 
-  if (dnin)
   svg_sem.append("path")
       .datum(semesterData)
       .attr("class", "dnin_path")
@@ -335,7 +336,6 @@ function displaySemseterLineGraph() {
       .attr("stroke-width", 1.5)
       .attr("d", line_in);
 
-  if (togo)
   svg_sem.append("path")
       .datum(semesterData)
 	  .attr("class", "togo_path")
@@ -380,7 +380,6 @@ function updateSemesterLineGraph() {
     .y(function(d) { return yScale(d.DineOut)+margin; })
     .curve(d3.curveMonotoneX);
 
-  if (dnin)
   svg_sem.selectAll(".dnin_path")
       .datum(semesterData)
       .transition()
@@ -391,7 +390,6 @@ function updateSemesterLineGraph() {
       .attr("stroke-width", 1.5)
       .attr("d", line_in)
 
-  if (togo)
   svg_sem.selectAll(".togo_path")
       .datum(semesterData)
       .transition()
@@ -470,7 +468,7 @@ function displayTimeOfDayStacked() {
         // The middle of the label is just half a bar's width to the right of the bar
         return xScale(i) + margin*2.15;
       })
-      .attr('y', margin + plot_height + label_spacing + label_height)
+      .attr('y', margin + plot_height + label_spacing + label_height - 7)
           .attr('text-anchor', 'middle')
       .text(function(d, i) { 
         if (i % 4== 0) 
@@ -481,15 +479,17 @@ function displayTimeOfDayStacked() {
       .attr('class', 'x-axis')
       .attr('x', plot_width / 2)
       .attr('y', 2 * margin + plot_height + label_height)
-      .text('Time During Day');
+      .attr('font-weight', 'bold')
+      .text('Time of Day');
 
   // Add the rotated y-axis title
   svg_day.append('text')
     .attr('class', 'y-axis')
     .attr('text-anchor', 'middle')
     .attr('transform',
-        'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
+        'translate(' + margin/1.5 + ', ' + (plot_height / 2 + margin) + ')' + 
         'rotate(-90)')
+    .attr('font-weight', 'bold')
     .text('Number of Swipes');
 
   // Create x-axis and y-axis
@@ -554,15 +554,9 @@ function updateTimeOfDayStacked() {
   var rects = groups.selectAll('rect')
     .data(function(d) { return d; })
     .transition()
-    .attr('x', function(d, i) {
-      return xScale(i) + 2 * margin;
-    })
-    .attr('y', function(d) {
-      return yScale(d[1]) + margin;
-    })
-    .attr('height', function(d) {
-      return yScale(d[0]) - yScale(d[1]);  
-    })
+    .attr('x', function(d, i) { return xScale(i) + 2 * margin; })
+    .attr('y', function(d) { return yScale(d[1]) + margin; })
+    .attr('height', function(d) { return yScale(d[0]) - yScale(d[1]); })
     .attr('width', xScale.bandwidth() - 5);
 
   // normalized lines
@@ -657,39 +651,36 @@ function displayStackedBar() {
     .attr('width', xScale.bandwidth() - 5);
 
 
-  // Generate our x-axis labels. Here we are searching for text tags with the
-  // class x-axis. This allows us to distinguish x-axis labels from other text.
+  // Generates X-axis labels
   svg.selectAll('text.x-axis')
     .data(daysOfWeek)
     .enter()
     .append('text')
       .attr('class', 'x-axis')
       .attr('x', function(d, i) {
-        // The middle of the label is just half a bar's width to the right of the bar
-        return 68 + xScale(i) + (xScale.bandwidth() - 5) / 2;
+        return 60 + xScale(i) + (xScale.bandwidth() - 5) / 2;
       })
-      .attr('y', margin + plot_height + label_spacing + label_height)
+      .attr('y', margin + plot_height + label_spacing + label_height - 8)
           .attr('text-anchor', 'middle')
       .text(function(d) { return d; });
 
-  // x-axis title
+  // X-axis title
   svg.append('text')
       .attr('class', 'x-axis')
       .attr('x', plot_width / 2)
       .attr('y', 2 * margin + plot_height + label_height)
+      .attr('font-weight', 'bold')
       .text('Days of the Week');
 
-  // Add the rotated y-axis title
+  // Y-axis title
   svg.append('text')
     .attr('class', 'y-axis')
     .attr('text-anchor', 'middle')
     .attr('transform',
-      // Translate and rotate the label into place. This rotates the label
-        // around 0,0 in its original position, so the label rotates around its
-        // center point
-        'translate(' + margin/3 + ', ' + (plot_height / 2 + margin) + ')' + 
+        'translate(' + margin/2 + ', ' + (plot_height / 2 + margin) + ')' + 
         'rotate(-90)')
-    .text('Number of Swipes');
+    .attr('font-weight', 'bold')
+    .text('Number of Swipes (Average)');
 
   // Create x-axis and y-axis
   var xaxis = d3.axisBottom(xScale).tickValues([]);
