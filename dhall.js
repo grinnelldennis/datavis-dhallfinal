@@ -217,9 +217,7 @@ function populateDayArray (a, d1, d3) {
   if (weekSelector != 0) 
     a = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
-
-
-  //a = a.filter(function(d) {return wkDaySelected[+d.Day];})
+  a = a.filter(function(d) {return wkDaySelected[+d.Date.getDay()];})
   for (var row of a) {
     var index = getArrayIndex(row.Date);
     if (0 <= index && index < 52){
