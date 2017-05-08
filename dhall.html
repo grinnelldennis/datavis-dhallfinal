@@ -10,57 +10,69 @@
   <body>
     <h1>Grinnell College Dining Hall </h1>
 
-
-	<h4>Semester</h4>
-          <select id="semester">
+<table style="width:1000px" bgcolor="#ededed">
+  <tr>
+    <th align="left"> <h4>Semester</h4></th>
+    <th align="left"><h4>Week</h4></th>
+    <th align="left"><h4>Day of the Week</h4></th>
+    <th align="left"><h4>Dining Option</h4></th>
+  </tr>
+  <tr>
+      <td>    <select id="semester">
             <option value="0" selected>All</option>
             <option value="1">Fall 2014</option>
             <option value="2">Spring 2015</option>
-	    <option value="3">Fall 2015</option>
+      <option value="3">Fall 2015</option>
             <option value="4">Spring 2016</option>
-          </select>
+          </select></td>
 
-	<h4>Week</h4>
+     <td>
           <select id="week">
             <option value="0" selected>All</option>
             <option value="1">Week 1</option>
             <option value="2">Week 2</option>
-	    <option value="3">Week 3</option>
+      <option value="3">Week 3</option>
             <option value="4">Week 4</option>
-	    <option value="5">Week 5</option>
+      <option value="5">Week 5</option>
             <option value="6">Week 6</option>
-	    <option value="7">Week 7</option>
+      <option value="7">Week 7</option>
             <option value="8">Week 8</option>
-	    <option value="9">Week 9</option>
+      <option value="9">Week 9</option>
             <option value="10">Week 10</option>
-	    <option value="11">Week 11</option>
+      <option value="11">Week 11</option>
             <option value="12">Week 12</option>
-	    <option value="13">Week 13</option>
+      <option value="13">Week 13</option>
             <option value="14">Week 14</option>
 	    <option value="15">Week 15</option>
-          </select>
+          </select></td>
 
-	<h4>Day of the Week</h4>
+	   <td>
           <select id="day">
             <option value="0" selected>All</option>
             <option value="1">Monday</option>
             <option value="2">Tuesday</option>
-	    <option value="3">Wednesday</option>
+      <option value="3">Wednesday</option>
             <option value="4">Thursday</option>
-	    <option value="5">Friday</option>
+      <option value="5">Friday</option>
             <option value="6">Saturday</option>
-	    <option value="7">Sunday</option>
-	</select>
-	
-	
-	<h4>Dining Option</h4>
-	<div class="checkbox">
-	  <label><input id="diningin" type="checkbox" checked> Dining In</label>
-	</div>
-	<div class="checkbox">
-	  <label><input id="togo" type="checkbox" checked> To-Go Box</label>
-	</div>
+      <option value="7">Sunday</option>
+  </select></td>
+  
+  
+  <td>
+  <div class="checkbox">
+    <label><input id="diningin" type="checkbox" checked> Dining In</label>
+  </div></td>
+  <td><div class="checkbox">
+    <label><input id="togo" type="checkbox" checked> To-Go Box</label>
+  </div></td>
 
+</tr>
+<tr>
+  <td></td>
+</tr><tr>
+  <td></td>
+</tr>
 
 <script type="text/javascript" src="dhall.js"></script>
   </body>
