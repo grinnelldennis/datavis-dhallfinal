@@ -76,6 +76,8 @@ d3.select('#day')
 // Helper that returns a Date object corresponding to correct semester date range
 function getDate(i) { return new Date(semester[semSelector][i]); }
 
+function 
+
 function updateStack() {
   populateWeekArray(trafficByDay, getDate(0),  getDate(1));
   displayStackedBar();
@@ -189,7 +191,7 @@ function populateDayArray (a, d1, d3) {
 
   if (weekSelector != 0) 
     a = a.filter(function(d) { return +weekSelector <= +d.Week && +d.Week < +weekSelector+1; });
-  a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
+    a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
 
 
   //a = a.filter(function(d) {return wkDaySelected[+d.Day];})
@@ -505,7 +507,6 @@ function displayStackedBar() {
       return yScale(d[0]) - yScale(d[1]);  
     })
     .attr('width', xScale.bandwidth() - 5);
-
 
   // Generate our x-axis labels. Here we are searching for text tags with the
   // class x-axis. This allows us to distinguish x-axis labels from other text.
