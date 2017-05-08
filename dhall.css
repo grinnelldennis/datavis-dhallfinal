@@ -1,5 +1,27 @@
-.checkbox {
-  width:125px;
-  float:left;
+@charset “UTF-8″;
 
+h1 {
+	color: black;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	text-decoration: underline;
 }
+
+
+h4 {
+	color: black;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	text-decoration: underline;
+}
+
+
+.x-axis {
+	color: black;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+.y-axis {
+	color: black;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+
