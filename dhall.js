@@ -410,6 +410,8 @@ var svg_day = d3.select('body')
    .attr('width', svg_width)
    .attr('height', svg_height);
 
+var day_max = 240;
+
 function displayTimeOfDayStacked() {
 
   // Set-up for stacked bar chart
@@ -425,7 +427,7 @@ function displayTimeOfDayStacked() {
     .range([0, plot_width], 0.05);
 
   var yScale = d3.scaleLinear()
-    .domain([0, dailyData[52].Max])
+    .domain([0, day_max])
     .range([plot_height, 0]);
 
   // Create easy colors accessible from the 10-step ordinal scale
@@ -463,10 +465,7 @@ function displayTimeOfDayStacked() {
     .enter()
     .append('text')
       .attr('class', 'x-axis')
-      .attr('x', function(d, i) {
-        // The middle of the label is just half a bar's width to the right of the bar
-        return xScale(i) + margin*2.15;
-      })
+      .attr('x', function(d, i) { return xScale(i) + margin*2.15; })
       .attr('y', margin + plot_height + label_spacing + label_height - 7)
           .attr('text-anchor', 'middle')
       .text(function(d, i) { 
@@ -507,7 +506,7 @@ function displayTimeOfDayStacked() {
   var line_normalized = d3.line()
   	.defined(function(d) {return d;})
     .x(function(d, i) { return xScale(i)+margin*2 + 5; })
-    .y(function(d) { return yScale(d.DineOut/d.DineIn*dailyData[52].Max)+margin; })
+    .y(function(d) { return yScale(d.DineOut/d.DineIn*day_max)+margin; })
     .curve(d3.curveMonotoneX);
 
   svg_day.append("path")
@@ -536,7 +535,7 @@ function updateTimeOfDayStacked() {
     .range([0, plot_width], 0.05);
 
   var yScale = d3.scaleLinear()
-    .domain([0, dailyData[52].Max])
+    .domain([0, day_max])
     .range([plot_height, 0]);
 
   // Create easy colors accessible from the 10-step ordinal scale
@@ -562,7 +561,7 @@ function updateTimeOfDayStacked() {
   var line_normalized = d3.line()
     .defined(function(d) {return d;})
     .x(function(d, i) { return xScale(i)+margin*2+5; })
-    .y(function(d) { return yScale(d.DineOut/d.DineIn*dailyData[52].Max)+margin; })
+    .y(function(d) { return yScale(d.DineOut/d.DineIn*day_max)+margin; })
     .curve(d3.curveMonotoneX);
 
   svg_day.selectAll(".norm_lines")
