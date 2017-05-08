@@ -263,7 +263,7 @@ function displaySemseterLineGraph() {
   var line_in = d3.line()
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
     .y(function(d) { return yScale(d.DineIn)+margin; })
-    .curve(d3.curveLinear);
+    .curve(d3.curveCardinal.tension(.5));
 
   var line_out = d3.line()
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
@@ -413,7 +413,7 @@ function displayLineChartSvg() {
     .text('Number of Swipes');
 
   // Create x-axis and y-axis
-  var xaxis = d3.axisBottom(xScale);
+  var xaxis = d3.axisBottom(xScale).tickValues([]);
   var yaxis = d3.axisLeft(yScale);
 
 
@@ -542,7 +542,7 @@ function displayStackedBar() {
     .text('Number of Swipes');
 
   // Create x-axis and y-axis
-  var xaxis = d3.axisBottom(xScale);
+  var xaxis = d3.axisBottom(xScale).tickValues([]);
   var yaxis = d3.axisLeft(yScale);
 
 
