@@ -147,9 +147,10 @@ function processCsvData (data) {
   for (var row of data) {
     if (row.Dash == "DayTotals:") {
       // pushes each single-day-total onto an element
+      var date = new Date(row.Date);
       trafficByDay.push ({
-        Date: new Date(row.Date),
-        Day: row.Day, Week: row.Week,
+        Date: date,
+        Day: date.getDay(), Week: row.Week,
         DineIn: row.DineIn, DineOut: row.DineOut
       });
     } else {
