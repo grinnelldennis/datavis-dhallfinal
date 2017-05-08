@@ -1,21 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @wongbenj
- Sign out
- Watch 1
-  Star 0
- Fork 0 grinnelldennis/datavis-dhallfinal
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Pulse  Graphs
-Branch: master Find file Copy pathdatavis-dhallfinal/dhall.js
-e12a9ab  12 minutes ago
-@grinnelldennis grinnelldennis function version
-2 contributors @grinnelldennis @wongbenj
-RawBlameHistory     
-557 lines (471 sloc)  16.1 KB
 //------------------------------------------------------------------------
 // Global filtering options
 var dnin = true;
@@ -572,5 +554,3 @@ function displayStackedBar() {
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 }
-Contact GitHub API Training Shop Blog About
-© 2017 GitHub, Inc. Terms Privacy Security Status Help
