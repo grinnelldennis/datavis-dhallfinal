@@ -11,6 +11,13 @@ var semester = [["08/01/2014", "06/01/2016"],
           ["08/01/2015", "12/20/2015"],
           ["01/15/2016", "06/01/2016"]];
 
+//------------------------------------------------------------------------
+// Global SVG variables
+// Set up the width and height of the entire SVG
+var svg_width = 800;
+var svg_height = 600;
+var margin = 30;
+
 
 //------------------------------------------------------------------------
 //---Check Boxes Handlers  (Thomas Pitcher)
@@ -20,8 +27,8 @@ d3.select('#diningin')
   .on('change', function() {
 	console.log(d3.select(this).node().checked); 
 	diningin = d3.select(this).node().checked;
-	updateStack();
-	updateLine();
+	updateStackTransition();
+	updateLineTransition();
 	});
 
 // #To-Go Box checkboxes
@@ -29,9 +36,9 @@ d3.select('#togo')
   .on('change', function() {
 	console.log(d3.select(this).node().checked); 
 	togo = d3.select(this).node().checked;
-	updateStack();
-	updateLine();
-  updateSemester();
+	updateStackTransition();
+	updateLineTransition();
+        updateSemesterTransition();
 	});
 
 //---Drop-Down Handlers
@@ -40,9 +47,9 @@ d3.select('#semester')
   .on('change', function() {
     console.log(d3.select(this).node().value);
     semSelector = d3.select(this).node().value;
-    updateStack();
-    updateLine();
-    updateSemester();
+    updateStackTransition();
+    updateLineTransition();
+    updateSemesterTransition();
   });
 	
 // Week drop down
@@ -50,9 +57,9 @@ d3.select('#week')
   .on('change', function() {
     console.log(d3.select(this).node().value);
     weekSelector = d3.select(this).node().value;
-    updateStack();
-	  updateLine();
-    updateSemester();
+    updateStackTransition();
+    updateLineTransition();
+    updateSemesterTransition();
   });
 
 // Day of week drop down
@@ -64,9 +71,9 @@ d3.select('#day')
     if (daySelector == 0) {
 		  wkDaySelected = [true, true, true, true, true, true, true];
     }	else { wkDaySelected[daySelector] = true; }
-    updateStack();
-  	updateLine();
-    updateSemester();
+    updateStackTransition();
+    updateLineTransition();
+    updateSemesterTransition();
 });
 
 
@@ -91,6 +98,23 @@ function updateSemester() {
   displaySemseterLineGraph();
 }
 
+function updateStackTransition() {
+  populateWeekArray(trafficByDay, getDate(0),  getDate(1));
+  updateBarGraph();
+}
+
+function updateLineTransition() {
+  populateDayArray(trafficByFifteen, getDate(0),  getDate(1));
+  updateTimeOfDayStacked();
+}
+
+function updateSemesterTransition() {
+  populateSemesterArray(trafficByDay, getDate(0),  getDate(1));
+    updateSemesterLineGraph();
+}
+
+
+
 //------------------------------------------------------------------------
 //---CSV Loading  (Dennis)
 
@@ -107,6 +131,7 @@ d3.queue()
     processCsvData(f2015);
     processCsvData(s2016);
 
+    function getDate(i) { return new Date(semester[semSelector][i]) }; 
     // display default graphs
     updateStack();
     updateLine();
@@ -230,12 +255,18 @@ function populateSemesterArray(a, d1, d3) {
 //---Zoom Chart over Day Array
 //---https://bl.ocks.org/mbostock/431a331294d2b5ddd33f947cf4c81319
 
+// Create svg for zoom chart over day array
+var svg_sem = d3.select('body')
+   .append('svg')
+   .attr('width', svg_width*2)
+   .attr('height', svg_height);
+
 function displaySemseterLineGraph() {
-  var width_semeseter = plot_width*2;
+  var width_semester = plot_width*2;
   // Set-up scales for stacked bar chart
   var xScale = d3.scaleTime()
     .domain([semesterData[0].Date, semesterData[semesterData.length-1].Date])
-    .range([0, width_semeseter], 0.05);
+    .range([0, width_semester], 0.05);
 
   var yScale = d3.scaleLinear()
     .domain([0, 3200])
@@ -244,24 +275,17 @@ function displaySemseterLineGraph() {
   // Create easy colors accessible from the 10-step ordinal scale
   var colors = d3.scaleOrdinal(d3.schemeCategory10);
 
-  // Create SVG for stacked bar chart
-  var svg_day = d3.select('body')
-    .append('svg')
-    .attr('width', svg_width*2)
-    .attr('height', svg_height);
-
   // Add a group for each row of data
-  var groups = svg_day.selectAll('h')
+  var groups = svg_sem.selectAll('h')
     .data(semesterData)
     .enter()
     .append('g')
     .style('fill', function(d, i) {
       return colors(i);
     });
-
-  // Add a rect for each data value
+    
   var line_in = d3.line()
-  	.defined(function(d) {return d;})
+    .defined(function(d) {return d;})
     .x(function(d, i) { return xScale(d.Date)+margin*2; })
     .y(function(d) { return yScale(d.DineIn)+margin; })
     .curve(d3.curveMonotoneX);
@@ -272,14 +296,14 @@ function displaySemseterLineGraph() {
     .curve(d3.curveMonotoneX);
 
   // x-axis title
-  svg_day.append('text')
+  svg_sem.append('text')
       .attr('class', 'x-axis')
       .attr('x', plot_width)
       .attr('y', 2 * margin + plot_height + label_height)
-      .text('Time During Day');
+      .text('Time');
 
   // Add the rotated y-axis title
-  svg_day.append('text')
+  svg_sem.append('text')
     .attr('class', 'y-axis')
     .attr('text-anchor', 'middle')
     .attr('transform',
@@ -291,18 +315,18 @@ function displaySemseterLineGraph() {
   var xaxis = d3.axisBottom(xScale);
   var yaxis = d3.axisLeft(yScale);
 
-
-  svg_day.append('g')
+  svg_sem.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
       .call(xaxis);
 
-  svg_day.append('g')
+  svg_sem.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 
   if (dnin)
-  svg_day.append("path")
+  svg_sem.append("path")
       .datum(semesterData)
+      .attr("class", "dnin_path")
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-linejoin", "round")
@@ -311,19 +335,82 @@ function displaySemseterLineGraph() {
       .attr("d", line_in);
 
   if (togo)
-  svg_day.append("path")
+  svg_sem.append("path")
       .datum(semesterData)
+	  .attr("class", "togo_path")
       .attr("fill", "none")
       .attr("stroke", "orange")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
-      .attr("d", line_out);
-      
+      .attr("d", line_out);     
 }
+
+// Uses transitions to update Semester Line Graph when handlers are chosen
+function updateSemesterLineGraph() {
+  var width_semester = plot_width*2;
+  // Set-up scales for stacked bar chart
+  var xScale = d3.scaleTime()
+    .domain([semesterData[0].Date, semesterData[semesterData.length-1].Date])
+    .range([0, width_semester], 0.05);
+
+  var yScale = d3.scaleLinear()
+    .domain([0, 3200])
+    .range([plot_height, 0]);
+
+  // Create easy colors accessible from the 10-step ordinal scale
+  var colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+  // Add a group for each row of data
+  var groups = svg_sem.selectAll('h')
+    .data(semesterData)
+    .style('fill', function(d, i) {
+      return colors(i);
+    });
+    
+  var line_in = d3.line()
+    .defined(function(d) {return d;})
+    .x(function(d, i) { return xScale(d.Date)+margin*2; })
+    .y(function(d) { return yScale(d.DineIn)+margin; })
+    .curve(d3.curveMonotoneX);
+
+  var line_out = d3.line()
+    .x(function(d, i) { return xScale(d.Date)+margin*2; })
+    .y(function(d) { return yScale(d.DineOut)+margin; })
+    .curve(d3.curveMonotoneX);
+
+  if (dnin)
+  svg_sem.selectAll(".dnin_path")
+      .datum(semesterData)
+      .transition()
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_in)
+
+  if (togo)
+  svg_sem.selectAll(".togo_path")
+      .datum(semesterData)
+      .transition()
+      .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_out)
+}
+
 
 //------------------------------------------------------------------------
 //---SVG Drawing, Line 
+
+// Create SVG for line chart
+var svg_day = d3.select('body')
+   .append('svg')
+   .attr('width', svg_width)
+   .attr('height', svg_height);
 
 function displayTimeOfDayStacked() {
 
@@ -345,13 +432,7 @@ function displayTimeOfDayStacked() {
 
   // Create easy colors accessible from the 10-step ordinal scale
   var colors = d3.scaleOrdinal(d3.schemeCategory10);
-
-  // Create SVG for stacked bar chart
-  var svg_day = d3.select('body')
-    .append('svg')
-    .attr('width', svg_width)
-    .attr('height', svg_height);
-
+    
   // Add a group for each row of data
   var groups = svg_day.selectAll('h')
     .data(stackedArr)
@@ -367,7 +448,7 @@ function displayTimeOfDayStacked() {
     .enter()
     .append('rect')
     .attr('x', function(d, i) {
-      return xScale(i) + 2 * margin-5;
+      return xScale(i) + 2 * margin;
     })
     .attr('y', function(d) {
       return yScale(d[1]) + margin;
@@ -425,29 +506,84 @@ function displayTimeOfDayStacked() {
   // normalized lines
   var line_normalized = d3.line()
   	.defined(function(d) {return d;})
-    .x(function(d, i) { return xScale(i)+margin*2; })
+    .x(function(d, i) { return xScale(i)+margin*2 + 5; })
     .y(function(d) { return yScale(d.DineOut/d.DineIn*dailyData[52].Max)+margin; })
     .curve(d3.curveMonotoneX);
 
   svg_day.append("path")
       .datum(dailyData)
+	  .attr("class", "norm_lines")
       .attr("fill", "none")
       .attr("stroke", "black")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
       .attr("d", line_normalized);
-
 }
 
+function updateTimeOfDayStacked() {
+
+  // Update for stacked bar chart
+  var stack = d3.stack()
+    .keys(['AvgIn', 'AvgOut']);
+
+  // Manipulate data array to be able to create stacked bar chart
+  var stackedArr = stack(dailyData);
+
+  // Update scales for stacked bar chart
+  var xScale = d3.scaleBand()
+    .domain(d3.range(dailyData.length-1))
+    .range([0, plot_width], 0.05);
+
+  var yScale = d3.scaleLinear()
+    .domain([0, dailyData[52].Max])
+    .range([plot_height, 0]);
+
+  // Create easy colors accessible from the 10-step ordinal scale
+  var colors = d3.scaleOrdinal(d3.schemeCategory10);
+    
+  // Add a group for each row of data
+  var groups = svg_day.selectAll('g')
+    .data(stackedArr)
+    .style('fill', function(d, i) {
+      return colors(i);
+    });
+
+  // Add a rect for each data value
+  var rects = groups.selectAll('rect')
+    .data(function(d) { return d; })
+    .transition()
+    .attr('x', function(d, i) {
+      return xScale(i) + 2 * margin;
+    })
+    .attr('y', function(d) {
+      return yScale(d[1]) + margin;
+    })
+    .attr('height', function(d) {
+      return yScale(d[0]) - yScale(d[1]);  
+    })
+    .attr('width', xScale.bandwidth() - 5);
+
+  // normalized lines
+  var line_normalized = d3.line()
+    .defined(function(d) {return d;})
+    .x(function(d, i) { return xScale(i)+margin*2+5; })
+    .y(function(d) { return yScale(d.DineOut/d.DineIn*dailyData[52].Max)+margin; })
+    .curve(d3.curveMonotoneX);
+
+  svg_day.selectAll(".norm_lines")
+      .datum(dailyData)
+      .transition()
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 1.5)
+      .attr("d", line_normalized)
+}
 
 //------------------------------------------------------------------------
 //---SVG Drawing, Stacked Bars (Ben)
-
-// Set up the width and height of the entire SVG
-var svg_width = 800;
-var svg_height = 600;
-var margin = 30;
 
 // Compute available plot area now that we know the margins
 var plot_width = svg_width - 5/2 * margin;
@@ -468,6 +604,11 @@ var daysOfWeek = [
     'Saturday'
 ];
 
+// Create SVG for stacked bar chart
+var svg = d3.select('body')
+    .append('svg')
+    .attr('width', svg_width)
+    .attr('height', svg_height); 
 
 function displayStackedBar() {
   // Set-up for stacked bar chart
@@ -483,18 +624,12 @@ function displayStackedBar() {
     .range([0, plot_width], 0.05);
 
   var yScale = d3.scaleLinear()
-    .domain([0, weeklyData[7].Max])
+    .domain([0, 3200])
     .range([plot_height, 0]);
 
   // Create easy colors accessible from the 10-step ordinal scale
-  var colors = d3.scaleOrdinal(d3.schemeCategory10);
-
-  // Create SVG for stacked bar chart
-  var svg = d3.select('body')
-    .append('svg')
-    .attr('width', svg_width)
-    .attr('height', svg_height);
-
+  var colors = d3.scaleOrdinal(d3.schemeCategory10); 
+    
   // Add a group for each row of data
   var groups = svg.selectAll('g')
     .data(stackedArr)
@@ -559,7 +694,6 @@ function displayStackedBar() {
   var xaxis = d3.axisBottom(xScale).tickValues([]);
   var yaxis = d3.axisLeft(yScale);
 
-
   svg.append('g')
       .attr('transform', 'translate(' + 2 * margin + ', ' + (plot_height + margin) + ')')
       .call(xaxis);
@@ -568,3 +702,49 @@ function displayStackedBar() {
       .attr('transform', 'translate(' + 2 * margin + ', ' + margin + ')')
       .call(yaxis);
 }
+
+// Uses transitions to update stacked bar when handlers are chosen
+function updateBarGraph() {
+    // Update stack and stacked array
+    var stack = d3.stack()
+        .keys(['AvgIn', 'AvgOut']);
+
+    var stackedArr = stack(weeklyData);
+
+    // Update Scale Domains
+    var xScale = d3.scaleBand()
+        .domain(d3.range(weeklyData.length-1))
+        .range([0, plot_width], 0.05);
+
+    var yScale = d3.scaleLinear()
+        .domain([0, 3200])
+        .range([plot_height, 0]);
+
+    // Create easy colors accessible from the 10-step ordinal scale
+    var colors = d3.scaleOrdinal(d3.schemeCategory10);
+    
+    // Update rectangles
+    // Add a group for each row of data
+    var groups = svg.selectAll('g')
+        .data(stackedArr)
+        .style('fill', function(d, i) {
+            return colors(i);
+        });
+
+    // Add a rect for each data value
+    var rects = groups.selectAll('rect')
+        .data(function(d) { return d; })
+        .transition()
+        .attr('x', function(d, i) {
+            return xScale(i) + 2 * margin;
+        })
+        .attr('y', function(d) {
+            return yScale(d[1]) + margin;
+        })
+        .attr('height', function(d) {
+            return yScale(d[0]) - yScale(d[1]);  
+        })
+        .attr('width', xScale.bandwidth() - 5);
+}    
+
+
