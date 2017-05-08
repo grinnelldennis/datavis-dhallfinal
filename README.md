@@ -1,5 +1,6 @@
 # datavis-dhallfinal
 
+Collaborated with Benjamin Wong, Thomas Pitcher, and Dennis Chan 
 
 ### Updates
 
