@@ -68,7 +68,7 @@ d3.select('#day')
     console.log(d3.select(this).node().value);
     var daySelector = d3.select(this).node().value;
     wkDaySelected = [false, false, false, false, false, false, false];
-    if (daySelector == 0) {
+    if (daySelector == -1) {
 		  wkDaySelected = [true, true, true, true, true, true, true];
     }	else { wkDaySelected[daySelector] = true; }
     updateStackTransition();
@@ -188,9 +188,10 @@ function populateWeekArray (a, d1, d3) {
   a = a.filter(function(d) { return +d1 <= +d.Date && +d.Date <= +d3; });
   for (var row of a) { 
     if (+row.DineIn != 0) {
-      weeklyData[+row.Day].DineIn += +row.DineIn; 
-      weeklyData[+row.Day].DineOut += +row.DineOut; 
-      weeklyData[+row.Day].Count++;
+      var d = row.Date.getDay();
+      weeklyData[d].DineIn += +row.DineIn; 
+      weeklyData[d].DineOut += +row.DineOut; 
+      weeklyData[d].Count++;
     } 
   }
   // finds maximum
