@@ -2,6 +2,10 @@
 
 Collaborated with Benjamin Wong, Thomas Pitcher, and Dennis Chan 
 
+Access visualization by opening/running index.html.
+
+Special thanks to Richard Williams for providing the necessary data to produce this visualization.
+
 ### Updates
 
 - Added transition effects on all three charts
