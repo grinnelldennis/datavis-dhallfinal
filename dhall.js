@@ -23,25 +23,6 @@ var margin = 30;
 //------------------------------------------------------------------------
 //---Check Boxes Handlers
 
-// #Dining-in checkboxes
-d3.select('#diningin')
-  .on('change', function() {
-	  console.log(d3.select(this).node().checked); 
-	  diningin = d3.select(this).node().checked;
-	  updateStackTransition();
-	  updateLineTransition();
-	});
-
-// #To-Go Box checkboxes
-d3.select('#togo')
-  .on('change', function() {
-	  console.log(d3.select(this).node().checked); 
-	  togo = d3.select(this).node().checked;
-	  updateStackTransition();
-	  updateLineTransition();
-    updateSemesterTransition();
-	});
-
 //---Drop-Down Handlers
 // Semester drop down
 d3.select('#semester')
